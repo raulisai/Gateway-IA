@@ -5,3 +5,4 @@ from app.models.user import User  # noqa
 from app.models.gateway_key import GatewayKey  # noqa
 from app.models.provider_key import ProviderKey  # noqa
 from app.models.request_log import RequestLog  # noqa
+from app.models.revoked_token import RevokedToken  # noqa

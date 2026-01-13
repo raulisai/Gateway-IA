@@ -7,11 +7,10 @@ class ProviderKeyBase(BaseModel):
     is_active: Optional[bool] = True
 
 class ProviderKeyCreate(ProviderKeyBase):
-    user_id: str
-    encrypted_key: str
+    api_key: str
 
 class ProviderKeyUpdate(ProviderKeyBase):
-    encrypted_key: Optional[str] = None
+    api_key: Optional[str] = None
 
 class ProviderKeyInDBBase(ProviderKeyBase):
     id: str

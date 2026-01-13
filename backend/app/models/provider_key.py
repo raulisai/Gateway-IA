@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ProviderKey(Base):
     __tablename__ = "provider_keys"
@@ -13,6 +13,6 @@ class ProviderKey(Base):
     encrypted_key = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     last_verified_at = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     user = relationship("User", back_populates="provider_keys")

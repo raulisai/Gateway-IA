@@ -1,0 +1,311 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-7.4.4, pluggy-1.6.0 -- C:\Users\raul_\Documents\code\Gateway-IA\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\raul_\Documents\code\Gateway-IA\backend
+configfile: pytest.ini
+plugins: anyio-4.12.1, asyncio-0.23.3
+asyncio: mode=Mode.AUTO
+collecting ... collected 1 item
+
+tests/test_keys.py::test_gateway_keys_crud_flow FAILED                   [100%]
+
+================================== FAILURES ===================================
+_________________________ test_gateway_keys_crud_flow _________________________
+
+self = <sqlalchemy.engine.base.Connection object at 0x00000133E0897FE0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x00000133DDF110D0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x00000133E08DC680>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x00000133E08DC3E0>
+parameters = [('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjkwMzM4MTIsInN1YiI6ImtleXRlc3RAZXhhbXBsZS5jb20ifQ.g1H6a0X4IxtPWISqBn6gJMvB7TyM9mTv25veTizVfJI', 1, 0)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+venv\Lib\site-packages\sqlalchemy\engine\base.py:1969: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x00000133DDF110D0>
+cursor = <sqlite3.Cursor object at 0x00000133E08B13C0>
+statement = 'SELECT revoked_tokens.id AS revoked_tokens_id, revoked_tokens.token AS revoked_tokens_token, revoked_tokens.revoked_at AS revoked_tokens_revoked_at \nFROM revoked_tokens \nWHERE revoked_tokens.token = ?\n LIMIT ? OFFSET ?'
+parameters = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjkwMzM4MTIsInN1YiI6ImtleXRlc3RAZXhhbXBsZS5jb20ifQ.g1H6a0X4IxtPWISqBn6gJMvB7TyM9mTv25veTizVfJI', 1, 0)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x00000133E08DC680>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such table: revoked_tokens
+
+venv\Lib\site-packages\sqlalchemy\engine\default.py:922: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.mark.asyncio
+    async def test_gateway_keys_crud_flow():
+        async with AsyncClient(app=app, base_url="http://test") as ac:
+            # 1. Setup: Create and login user
+            email = "keytest@example.com"
+            password = "testpassword"
+            await ac.post(
+                f"{settings.API_V1_STR}/auth/signup",
+                json={"email": email, "password": password}
+            )
+            login_res = await ac.post(
+                f"{settings.API_V1_STR}/auth/login",
+                json={"email": email, "password": password}
+            )
+            token = login_res.json()["access_token"]
+            headers = {"Authorization": f"Bearer {token}"}
+    
+            # 2. Create Key
+>           create_res = await ac.post(
+                f"{settings.API_V1_STR}/keys/",
+                json={"name": "Test Key", "rate_limit": 50},
+                headers=headers
+            )
+
+tests\test_keys.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\httpx\_client.py:1877: in post
+    return await self.request(
+venv\Lib\site-packages\httpx\_client.py:1559: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+venv\Lib\site-packages\httpx\_client.py:1646: in send
+    response = await self._send_handling_auth(
+venv\Lib\site-packages\httpx\_client.py:1674: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv\Lib\site-packages\httpx\_client.py:1711: in _send_handling_redirects
+    response = await self._send_single_request(request)
+venv\Lib\site-packages\httpx\_client.py:1748: in _send_single_request
+    response = await transport.handle_async_request(request)
+venv\Lib\site-packages\httpx\_transports\asgi.py:162: in handle_async_request
+    await self.app(scope, receive, send)
+venv\Lib\site-packages\fastapi\applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+venv\Lib\site-packages\starlette\applications.py:123: in __call__
+    await self.middleware_stack(scope, receive, send)
+venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+venv\Lib\site-packages\starlette\middleware\cors.py:83: in __call__
+    await self.app(scope, receive, send)
+venv\Lib\site-packages\starlette\middleware\exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+venv\Lib\site-packages\starlette\_exception_handler.py:64: in wrapped_app
+    raise exc
+venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    await app(scope, receive, sender)
+venv\Lib\site-packages\starlette\routing.py:762: in __call__
+    await self.middleware_stack(scope, receive, send)
+venv\Lib\site-packages\starlette\routing.py:782: in app
+    await route.handle(scope, receive, send)
+venv\Lib\site-packages\starlette\routing.py:297: in handle
+    await self.app(scope, receive, send)
+venv\Lib\site-packages\starlette\routing.py:77: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+venv\Lib\site-packages\starlette\_exception_handler.py:64: in wrapped_app
+    raise exc
+venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    await app(scope, receive, sender)
+venv\Lib\site-packages\starlette\routing.py:72: in app
+    response = await func(request)
+venv\Lib\site-packages\fastapi\routing.py:285: in app
+    raise e
+venv\Lib\site-packages\fastapi\routing.py:275: in app
+    solved_result = await solve_dependencies(
+venv\Lib\site-packages\fastapi\dependencies\utils.py:600: in solve_dependencies
+    solved = await run_in_threadpool(call, **sub_values)
+venv\Lib\site-packages\starlette\concurrency.py:40: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+venv\Lib\site-packages\anyio\to_thread.py:63: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+venv\Lib\site-packages\anyio\_backends\_asyncio.py:2502: in run_sync_in_worker_thread
+    return await future
+venv\Lib\site-packages\anyio\_backends\_asyncio.py:986: in run
+    result = context.run(func, *args)
+app\api\deps.py:28: in get_current_user
+    revoked = db.query(models.RevokedToken).filter(models.RevokedToken.token == token).first()
+venv\Lib\site-packages\sqlalchemy\orm\query.py:2748: in first
+    return self.limit(1)._iter().first()  # type: ignore
+venv\Lib\site-packages\sqlalchemy\orm\query.py:2847: in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+venv\Lib\site-packages\sqlalchemy\orm\session.py:2308: in execute
+    return self._execute_internal(
+venv\Lib\site-packages\sqlalchemy\orm\session.py:2190: in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+venv\Lib\site-packages\sqlalchemy\orm\context.py:293: in orm_execute_statement
+    result = conn.execute(
+venv\Lib\site-packages\sqlalchemy\engine\base.py:1416: in execute
+    return meth(
+venv\Lib\site-packages\sqlalchemy\sql\elements.py:517: in _execute_on_connection
+    return connection._execute_clauseelement(
+venv\Lib\site-packages\sqlalchemy\engine\base.py:1639: in _execute_clauseelement
+    ret = self._execute_context(
+venv\Lib\site-packages\sqlalchemy\engine\base.py:1848: in _execute_context
+    return self._exec_single_context(
+venv\Lib\site-packages\sqlalchemy\engine\base.py:1988: in _exec_single_context
+    self._handle_dbapi_exception(
+venv\Lib\site-packages\sqlalchemy\engine\base.py:2344: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+venv\Lib\site-packages\sqlalchemy\engine\base.py:1969: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x00000133DDF110D0>
+cursor = <sqlite3.Cursor object at 0x00000133E08B13C0>
+statement = 'SELECT revoked_tokens.id AS revoked_tokens_id, revoked_tokens.token AS revoked_tokens_token, revoked_tokens.revoked_at AS revoked_tokens_revoked_at \nFROM revoked_tokens \nWHERE revoked_tokens.token = ?\n LIMIT ? OFFSET ?'
+parameters = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjkwMzM4MTIsInN1YiI6ImtleXRlc3RAZXhhbXBsZS5jb20ifQ.g1H6a0X4IxtPWISqBn6gJMvB7TyM9mTv25veTizVfJI', 1, 0)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x00000133E08DC680>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: revoked_tokens
+E       [SQL: SELECT revoked_tokens.id AS revoked_tokens_id, revoked_tokens.token AS revoked_tokens_token, revoked_tokens.revoked_at AS revoked_tokens_revoked_at 
+E       FROM revoked_tokens 
+E       WHERE revoked_tokens.token = ?
+E        LIMIT ? OFFSET ?]
+E       [parameters: ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjkwMzM4MTIsInN1YiI6ImtleXRlc3RAZXhhbXBsZS5jb20ifQ.g1H6a0X4IxtPWISqBn6gJMvB7TyM9mTv25veTizVfJI', 1, 0)]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+venv\Lib\site-packages\sqlalchemy\engine\default.py:922: OperationalError
+------------------------------ Captured log call ------------------------------
+WARNING  passlib.handlers.bcrypt:bcrypt.py:622 (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\raul_\Documents\code\Gateway-IA\backend\venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+============================== warnings summary ===============================
+venv\Lib\site-packages\starlette\formparsers.py:10
+  C:\Users\raul_\Documents\code\Gateway-IA\backend\venv\Lib\site-packages\starlette\formparsers.py:10: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    import multipart
+
+venv\Lib\site-packages\pydantic\_internal\_config.py:271
+venv\Lib\site-packages\pydantic\_internal\_config.py:271
+venv\Lib\site-packages\pydantic\_internal\_config.py:271
+venv\Lib\site-packages\pydantic\_internal\_config.py:271
+venv\Lib\site-packages\pydantic\_internal\_config.py:271
+  C:\Users\raul_\Documents\code\Gateway-IA\backend\venv\Lib\site-packages\pydantic\_internal\_config.py:271: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_keys.py::test_gateway_keys_crud_flow - sqlalchemy.exc.Opera...
+======================== 1 failed, 6 warnings in 3.04s ========================

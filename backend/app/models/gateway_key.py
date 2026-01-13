@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 class GatewayKey(Base):
     __tablename__ = "gateway_keys"
@@ -14,7 +14,7 @@ class GatewayKey(Base):
     name = Column(String)
     is_active = Column(Boolean, default=True)
     rate_limit = Column(Integer, default=100)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     last_used_at = Column(DateTime)
 
     user = relationship("User", back_populates="gateway_keys")

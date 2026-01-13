@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 class RequestLog(Base):
     __tablename__ = "request_logs"
@@ -22,7 +22,7 @@ class RequestLog(Base):
     cache_hit = Column(Integer, default=0)
     status_code = Column(Integer, nullable=False)
     error_message = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     user = relationship("User", back_populates="request_logs")
     gateway_key = relationship("GatewayKey", back_populates="request_logs")

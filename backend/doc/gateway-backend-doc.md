@@ -44,7 +44,7 @@ Backend FastAPI
 ## 2. Stack Tecnológico
 
 ### Versiones Exactas
-| Componente | Versión |
+| Componente | Versión recomendada|
 |------------|---------|
 | Python | 3.11.8 |
 | FastAPI | 0.109.0 |
