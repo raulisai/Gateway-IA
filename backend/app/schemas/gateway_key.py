@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -21,15 +21,14 @@ class GatewayKeyUpdate(GatewayKeyBase):
     pass
 
 class GatewayKeyInDBBase(GatewayKeyBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     key_hash: str
     prefix: str
     created_at: datetime
     last_used_at: Optional[datetime] = None
-
-    class Config:
-        from_attributes = True
 
 class GatewayKey(GatewayKeyInDBBase):
     pass
