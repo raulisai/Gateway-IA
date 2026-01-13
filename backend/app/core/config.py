@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
 
+    # Database
+    SQLALCHEMY_DATABASE_URL: str = "sqlite:///./sql_app.db"
+
     class Config:
         case_sensitive = True
         env_file = ".env"
