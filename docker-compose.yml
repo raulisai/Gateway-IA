@@ -1,0 +1,62 @@
+version: '0.1'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gateway-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=sqlite:///./data/gateway.db
+      - SECRET_KEY=${SECRET_KEY}
+      - MASTER_ENCRYPTION_KEY=${MASTER_ENCRYPTION_KEY}
+      - CORS_ORIGINS=http://localhost:3000
+    networks:
+      - gateway-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gateway-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    networks:
+      - gateway-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  updater:
+    build:
+      context: ./updater
+      dockerfile: Dockerfile
+    container_name: gateway-updater
+    volumes:
+      - ./data:/app/data
+    environment:
+      - REGISTRY_URL=https://raw.githubusercontent.com/user/repo/main/registry.json
+    networks:
+      - gateway-network
+    restart: unless-stopped
+
+networks:
+  gateway-network:
+    driver: bridge
+
+volumes:
+  data:
