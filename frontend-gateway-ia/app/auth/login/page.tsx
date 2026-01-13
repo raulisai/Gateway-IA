@@ -90,6 +90,7 @@ export default function LoginPage() {
                         type="email"
                         placeholder="tu@email.com"
                         disabled={isLoading}
+                        autoComplete="email"
                         {...field}
                       />
                     </FormControl>
@@ -107,6 +108,7 @@ export default function LoginPage() {
                       <Input
                         type="password"
                         placeholder="••••••"
+                        autoComplete="current-password"
                         disabled={isLoading}
                         {...field}
                       />

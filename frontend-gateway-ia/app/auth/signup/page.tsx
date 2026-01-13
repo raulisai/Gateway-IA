@@ -101,6 +101,7 @@ export default function SignupPage() {
                         type="email"
                         placeholder="tu@email.com"
                         disabled={isLoading}
+                        autoComplete="email"
                         {...field}
                       />
                     </FormControl>
@@ -118,6 +119,7 @@ export default function SignupPage() {
                       <Input
                         type="text"
                         placeholder="Tu nombre"
+                        autoComplete="name"
                         disabled={isLoading}
                         {...field}
                       />
@@ -136,6 +138,7 @@ export default function SignupPage() {
                       <Input
                         type="password"
                         placeholder="••••••"
+                        autoComplete="new-password"
                         disabled={isLoading}
                         {...field}
                       />
@@ -153,6 +156,7 @@ export default function SignupPage() {
                     <FormControl>
                       <Input
                         type="password"
+                        autoComplete="new-password"
                         placeholder="••••••"
                         disabled={isLoading}
                         {...field}
