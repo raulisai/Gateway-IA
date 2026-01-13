@@ -1,0 +1,46 @@
+[
+    {
+        "id": "gpt-4o",
+        "provider": "openai",
+        "original_model_id": "gpt-4o-2024-08-06",
+        "name": "GPT-4o",
+        "description": "OpenAI's latest flagship model, high intelligence and speed.",
+        "cost_per_1k_input": 0.0025,
+        "cost_per_1k_output": 0.010,
+        "context_window": 128000,
+        "is_active": true
+    },
+    {
+        "id": "gpt-4o-mini",
+        "provider": "openai",
+        "original_model_id": "gpt-4o-mini",
+        "name": "GPT-4o mini",
+        "description": "Cost-efficient small model for simple tasks.",
+        "cost_per_1k_input": 0.00015,
+        "cost_per_1k_output": 0.00060,
+        "context_window": 128000,
+        "is_active": true
+    },
+    {
+        "id": "claude-3-5-sonnet",
+        "provider": "anthropic",
+        "original_model_id": "claude-3-5-sonnet-20240620",
+        "name": "Claude 3.5 Sonnet",
+        "description": "Anthropic's most intelligent model.",
+        "cost_per_1k_input": 0.003,
+        "cost_per_1k_output": 0.015,
+        "context_window": 200000,
+        "is_active": true
+    },
+    {
+        "id": "gemini-1.5-flash",
+        "provider": "google",
+        "original_model_id": "gemini-1.5-flash",
+        "name": "Gemini 1.5 Flash",
+        "description": "Google's fast and efficient model.",
+        "cost_per_1k_input": 0.000075,
+        "cost_per_1k_output": 0.0003,
+        "context_window": 1000000,
+        "is_active": true
+    }
+]
