@@ -12,3 +12,4 @@ package-lock.json
 access.log
 error.log
 *.log
+backend/logs/access.log
