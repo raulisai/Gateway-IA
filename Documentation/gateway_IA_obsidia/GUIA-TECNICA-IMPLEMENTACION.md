@@ -668,113 +668,202 @@ ORDER BY count DESC
 
 ---
 
-## 🔄 PARTE 6: UPDATER SERVICE
+## 🔄 PARTE 6: REGISTRY UPDATE SYSTEM
 
-### 6.1 Model Registry Auto-Update
+### 6.1 Registry Scraper & Auto-Update
 
 #### ¿Cómo mantener el catálogo actualizado?
 
 **Problema:** Los precios de modelos LLM cambian frecuentemente. El sistema debe actualizarse sin intervención manual.
 
-**Solución: Servicio background que sincroniza desde fuente central**
+**Solución: Endpoint de actualización + Cron Job dentro del backend**
 
 **Flujo completo:**
 
-1. **Source of Truth**
-   - GitHub repo público con registry.json
-   - Actualizado por scraper/bot que monitorea páginas de pricing
-   - Versión centralizada que todos los gateways consultan
+1. **Scrapers por Proveedor**
+   - Módulo dedicado: `services/registry_scraper.py`
+   - Un scraper específico por proveedor (OpenAI, Anthropic, Google)
+   - Cada scraper visita las páginas oficiales de pricing
+   - Extrae: model_id, pricing (input/output), context_window, capabilities
 
-2. **Scheduler en Updater Service**
+2. **Implementación de Scrapers**
+
+   **OpenAI Scraper:**
    ```python
-   schedule.every().day.at("00:00").do(update_registry)
-   ```
-   - Ejecutar una vez al día
-   - Horario de baja actividad (medianoche UTC)
-
-3. **Proceso de actualización:**
-
-   a. **Fetch from GitHub**
-   ```
-   URL: https://raw.githubusercontent.com/user/repo/main/registry.json
-   Method: HTTP GET
-   Timeout: 10s
+   def scrape_openai_models():
+     # URL: https://openai.com/api/pricing/
+     # Usar BeautifulSoup o Playwright para scraping
+     # Extraer tabla de precios
+     # Parsear: model name, input price, output price, context
+     # Retornar lista de modelos normalizados
    ```
 
-   b. **Validate Structure**
+   **Anthropic Scraper:**
    ```python
-   def validate_registry(data):
-     required_fields = ["version", "updated_at", "models"]
-     for model in data["models"]:
-       assert "id" in model
-       assert "pricing" in model
-       assert "specs" in model
+   def scrape_anthropic_models():
+     # URL: https://www.anthropic.com/pricing
+     # Similar lógica
+     # Anthropic puede tener API de pricing (verificar docs)
    ```
 
-   c. **Compare Versions**
+   **Google AI Scraper:**
    ```python
-   current_version = load_local_registry()["version"]
-   new_version = fetched_data["version"]
+   def scrape_google_models():
+     # URL: https://ai.google.dev/pricing
+     # Extraer modelos de Gemini
+   ```
+
+3. **Endpoint de Actualización Manual**
+
+   **Ruta:** `POST /api/admin/update-registry`
    
-   if new_version <= current_version:
-     return  # No update needed
+   **Autenticación:** Requiere JWT con rol admin (o admin key especial)
+   
+   **Proceso:**
+   ```
+   1. Validar autenticación (solo admin)
+   2. Ejecutar scrapers de todos los proveedores
+   3. Consolidar datos en estructura unificada
+   4. Validar estructura (schema check)
+   5. Crear backup: models.json → models.json.bak
+   6. Comparar con versión actual (detectar cambios)
+   7. Si hay cambios válidos:
+      - Escribir nuevo models.json
+      - Incrementar version number
+      - Registrar changelog
+   8. Retornar resumen de cambios
    ```
 
-   d. **Backup Current**
+   **Response esperado:**
+   ```json
+   {
+     "success": true,
+     "version": "1.2.0",
+     "changes": {
+       "added": ["gpt-4-turbo-2024-01"],
+       "updated": ["claude-3-opus: price $75→$60"],
+       "removed": ["gpt-3.5-turbo-0301"]
+     },
+     "timestamp": "2026-01-14T03:00:00Z"
+   }
+   ```
+
+4. **Cron Job Configuration**
+
+   **Dentro del Dockerfile del backend:**
+   ```dockerfile
+   # Instalar cron
+   RUN apt-get update && apt-get install -y cron
+   
+   # Copiar script de cron
+   COPY scripts/cron_update_registry.sh /app/scripts/
+   RUN chmod +x /app/scripts/cron_update_registry.sh
+   
+   # Configurar crontab
+   # Ejecutar a las 3:00 AM todos los días
+   RUN echo "0 3 * * * /app/scripts/cron_update_registry.sh >> /var/log/registry_update.log 2>&1" | crontab -
+   
+   # Comando de inicio: ejecutar cron + uvicorn
+   CMD ["sh", "-c", "cron && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+   ```
+
+   **Script cron_update_registry.sh:**
    ```bash
-   cp data/models.json data/models.json.bak
+   #!/bin/bash
+   # Script que llama al endpoint de actualización
+   
+   echo "[$(date)] Starting registry update..."
+   
+   # Obtener admin token (desde variable de entorno)
+   ADMIN_TOKEN=${ADMIN_API_KEY:-"default_admin_key"}
+   
+   # Llamar al endpoint
+   curl -X POST http://localhost:8000/api/admin/update-registry \
+     -H "Authorization: Bearer $ADMIN_TOKEN" \
+     -H "Content-Type: application/json"
+   
+   echo "[$(date)] Registry update completed"
    ```
 
-   e. **Write New Version**
-   ```python
-   with open("data/models.json", "w") as f:
-     json.dump(fetched_data, f, indent=2)
-   ```
-
-   f. **Trigger Backend Reload**
-   - Backend detecta cambio en archivo (watchdog o polling)
-   - Recarga ModelRegistry sin reiniciar servidor
-   - Log de cambios detectados
-
-4. **Detección de Cambios Importantes**
+5. **Detección de Cambios Importantes**
 
    **Price Changes:**
    ```python
-   for model in new_models:
-     old_price = old_registry[model.id].pricing
-     new_price = model.pricing
-     if new_price != old_price:
-       alert(f"Price changed for {model.id}: {old_price} → {new_price}")
+   def detect_price_changes(old_models, new_models):
+     changes = []
+     for model in new_models:
+       old = find_model(old_models, model.id)
+       if old and old.pricing != model.pricing:
+         changes.append({
+           "model": model.id,
+           "old_price": old.pricing,
+           "new_price": model.pricing,
+           "change_type": "price_update"
+         })
+     return changes
    ```
 
    **New Models:**
    ```python
-   new_model_ids = set(m.id for m in new_models)
-   old_model_ids = set(m.id for m in old_models)
-   added = new_model_ids - old_model_ids
-   if added:
-     alert(f"New models available: {added}")
+   def detect_new_models(old_models, new_models):
+     old_ids = set(m.id for m in old_models)
+     new_ids = set(m.id for m in new_models)
+     added = new_ids - old_ids
+     return [{"model": id, "change_type": "added"} for id in added]
    ```
 
    **Deprecated Models:**
    ```python
-   deprecated = old_model_ids - new_model_ids
-   if deprecated:
-     alert(f"Models removed: {deprecated}")
+   def detect_deprecated_models(old_models, new_models):
+     old_ids = set(m.id for m in old_models)
+     new_ids = set(m.id for m in new_models)
+     removed = old_ids - new_ids
+     return [{"model": id, "change_type": "deprecated"} for id in removed]
    ```
 
-5. **Notificaciones**
-   - Log en archivo: `/var/log/updater.log`
-   - Email a admin (opcional)
-   - Webhook a Slack/Discord (opcional)
-   - Mostrar banner en dashboard si hay cambios críticos
+6. **Changelog Endpoint**
 
-**Consideraciones:**
-- Manejar errores de red: si fetch falla, mantener registry actual
-- Validar integridad: checksum o firma digital del registry
-- Permitar rollback manual: `docker exec updater python rollback.py`
-- Implementar feature flags: permitir desactivar modelos sin eliminarlos
-- Versionado semántico: major.minor.patch para registry
+   **Ruta:** `GET /api/admin/registry-changelog?limit=10`
+   
+   **Response:**
+   ```json
+   {
+     "changes": [
+       {
+         "timestamp": "2026-01-14T03:00:00Z",
+         "version": "1.2.0",
+         "summary": {
+           "added": 2,
+           "updated": 3,
+           "removed": 1
+         },
+         "details": [...]
+       }
+     ]
+   }
+   ```
+
+7. **Notificaciones**
+   - Log estructurado en `/var/log/registry_update.log`
+   - Opcional: Webhook a Slack/Discord si hay cambios críticos
+   - Opcional: Email a admin si hay errores en el scraping
+   - Banner en dashboard si hay nuevos modelos disponibles
+
+**Consideraciones críticas:**
+
+- **Scraping Ethics**: Respetar robots.txt y rate limits de las páginas
+- **Fallback**: Si scraping falla, mantener registry actual (no romper el sistema)
+- **Validación estricta**: No actualizar si los datos scrapeados son inválidos
+- **Rollback automático**: Si backend no puede cargar nuevo models.json, restaurar backup
+- **Alertas**: Si el cron falla 3 días seguidos, enviar alerta crítica
+- **Testing**: Probar scrapers regularmente ya que las páginas pueden cambiar estructura
+
+**Alternativa si scraping es muy frágil:**
+
+Considerar usar:
+- APIs oficiales de pricing (si existen)
+- GitHub repo centralizado mantenido manualmente pero actualizado frecuentemente
+- Combinación: scraping + verificación manual mensual
 
 ---
 

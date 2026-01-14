@@ -194,3 +194,19 @@ complexity_score
 2026-01-14 11:07:29,381 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 10.01ms
 2026-01-14 11:07:29,384 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
 2026-01-14 11:07:29,394 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 10.13ms
+2026-01-14 11:26:17,333 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 11:26:17,335 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 11:26:17,348 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 13.45ms
+2026-01-14 11:26:17,348 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 14.97ms
+2026-01-14 11:26:20,413 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/cost-breakdown
+2026-01-14 11:26:20,413 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
+2026-01-14 11:26:20,422 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 8.20ms
+2026-01-14 11:26:20,422 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 9.21ms
+2026-01-14 11:26:50,390 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 11:26:50,396 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 6.17ms
+2026-01-14 11:26:50,398 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 11:26:50,407 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 8.17ms
+2026-01-14 11:27:20,408 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 11:27:20,415 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 6.20ms
+2026-01-14 11:27:20,418 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 11:27:20,426 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 8.03ms
