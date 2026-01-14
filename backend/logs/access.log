@@ -12,3 +12,27 @@
 2026-01-14 00:22:49,511 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 10.17ms
 2026-01-14 00:22:49,514 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
 2026-01-14 00:22:49,526 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 11.19ms
+2026-01-14 00:23:22,391 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:23:22,398 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 7.12ms
+2026-01-14 00:23:22,400 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:23:22,407 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 6.62ms
+2026-01-14 00:24:04,135 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:24:04,222 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 87.31ms
+2026-01-14 00:24:04,228 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:24:04,240 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 12.18ms
+2026-01-14 00:24:15,801 - app.core.middleware - INFO - REQ_START: POST /api/v1/auth/login
+2026-01-14 00:24:16,214 - app.core.middleware - INFO - REQ_END: POST /api/v1/auth/login Status: 200 Duration: 413.20ms
+2026-01-14 00:24:16,220 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:24:16,228 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 8.76ms
+2026-01-14 00:26:43,526 - app.core.middleware - INFO - REQ_START: POST /api/v1/auth/login
+2026-01-14 00:26:43,752 - app.core.middleware - INFO - REQ_END: POST /api/v1/auth/login Status: 200 Duration: 226.24ms
+2026-01-14 00:26:43,758 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:26:43,762 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 4.04ms
+2026-01-14 00:27:15,894 - app.core.middleware - INFO - REQ_START: POST /api/v1/auth/login/access-token
+2026-01-14 00:27:16,252 - app.core.middleware - INFO - REQ_END: POST /api/v1/auth/login/access-token Status: 200 Duration: 357.55ms
+2026-01-14 00:27:25,627 - app.core.middleware - INFO - REQ_START: GET /api/v1/keys/providers/list
+2026-01-14 00:27:25,637 - app.core.middleware - INFO - REQ_END: GET /api/v1/keys/providers/list Status: 200 Duration: 10.50ms
+2026-01-14 00:29:08,677 - app.core.middleware - INFO - REQ_START: POST /api/v1/auth/login
+2026-01-14 00:29:09,010 - app.core.middleware - INFO - REQ_END: POST /api/v1/auth/login Status: 200 Duration: 333.77ms
+2026-01-14 00:29:09,016 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:29:09,024 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 7.51ms
