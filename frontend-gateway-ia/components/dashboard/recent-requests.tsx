@@ -100,11 +100,11 @@ export function RecentRequests() {
             >
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">{request.model_used}</span>
+                  <span className="font-semibold">{request.model}</span>
                   <span className="text-xs text-muted-foreground">
                     ({request.provider})
                   </span>
-                  {request.cached && (
+                  {request.cache_hit === 1 && (
                     <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900 dark:text-green-300">
                       Cached
                     </span>
@@ -112,7 +112,7 @@ export function RecentRequests() {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span>
-                    {request.input_tokens + request.output_tokens} tokens
+                    {request.prompt_tokens + request.completion_tokens} tokens
                   </span>
                   <span>•</span>
                   <span>{formatLatency(request.latency_ms)}</span>
@@ -121,7 +121,7 @@ export function RecentRequests() {
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="font-semibold">{formatCost(request.cost)}</span>
+                <span className="font-semibold">{formatCost(request.cost_usd)}</span>
                 <span className="text-xs text-muted-foreground">
                   {formatDate(request.created_at)}
                 </span>

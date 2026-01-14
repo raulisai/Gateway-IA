@@ -18,4 +18,4 @@ class GatewayKey(Base):
     last_used_at = Column(DateTime)
 
     user = relationship("User", back_populates="gateway_keys")
-    request_logs = relationship("RequestLog", back_populates="gateway_key")
+    request_logs = relationship("RequestLog", back_populates="gateway_key", cascade="all, delete-orphan")

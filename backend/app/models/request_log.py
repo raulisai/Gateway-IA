@@ -8,8 +8,8 @@ class RequestLog(Base):
     __tablename__ = "request_logs"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, ForeignKey("users.id"), nullable=False)
-    gateway_key_id = Column(String, ForeignKey("gateway_keys.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    gateway_key_id = Column(String, ForeignKey("gateway_keys.id", ondelete="CASCADE"), nullable=False)
     endpoint = Column(String, nullable=False)
     provider = Column(String, nullable=False)
     model = Column(String, nullable=False)

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, Activity, Zap, TrendingUp } from 'lucide-react';
+import { DollarSign, Activity, Zap, TrendingUp, Hash } from 'lucide-react';
 import { MetricsCard } from '@/components/dashboard/metrics-card';
 import { CostChart } from '@/components/dashboard/cost-chart';
 import { ModelDistributionChart } from '@/components/dashboard/model-distribution-chart';
@@ -17,7 +17,7 @@ export default function DashboardPage() {
   // Fetch analytics overview
   const { data: overview, isLoading: overviewLoading } = useQuery({
     queryKey: ['analytics', 'overview'],
-    queryFn: () => apiClient.analytics.overview('24h'),
+    queryFn: () => apiClient.analytics.overview(1), // 1 day
     enabled: isAuthenticated,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
@@ -73,15 +73,26 @@ export default function DashboardPage() {
           loading={overviewLoading}
         />
         <MetricsCard
+          title="Total Tokens"
+          value={overview?.total_tokens.toLocaleString() || 0}
+          description="Tokens procesados"
+          icon={Hash}
+          loading={overviewLoading}
+        />
+        <MetricsCard
           title="Latencia Promedio"
           value={overview ? formatLatency(overview.avg_latency) : '0ms'}
           description="Tiempo de respuesta"
           icon={Zap}
           loading={overviewLoading}
         />
+      </div>
+
+      {/* Additional Metrics Row */}
+      <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
         <MetricsCard
           title="Cache Hit Rate"
-          value={overview ? `${(overview.cache_rate * 100).toFixed(1)}%` : '0%'}
+          value={overview ? `${(overview.cache_hit_rate * 100).toFixed(1)}%` : '0%'}
           description="Respuestas en caché"
           icon={TrendingUp}
           loading={overviewLoading}

@@ -9,6 +9,7 @@ import {
   Settings,
   LogOut,
   Menu,
+  Boxes,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,6 +31,11 @@ const routes = [
     label: 'API Keys',
     icon: Key,
     href: '/dashboard/keys',
+  },
+  {
+    label: 'Models',
+    icon: Boxes,
+    href: '/dashboard/models',
   },
   {
     label: 'Settings',

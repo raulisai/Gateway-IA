@@ -56,42 +56,58 @@ export interface AuthResponse {
 
 export interface GatewayKey {
   id: string;
-  key: string;
+  user_id: string;
+  key_hash: string;
+  prefix: string;
   name?: string;
+  rate_limit?: number;
   is_active: boolean;
   created_at: string;
   last_used_at?: string;
 }
 
+export interface GatewayKeyCreated extends GatewayKey {
+  key: string; // Raw key shown only once
+}
+
 export interface ProviderKey {
   id: string;
+  user_id: string;
   provider: string;
-  key_name?: string;
-  is_valid: boolean;
+  encrypted_key: string;
+  is_active: boolean;
   created_at: string;
+  last_verified_at?: string;
 }
 
 export interface Model {
   id: string;
-  name: string;
   provider: string;
+  original_model_id: string;
+  name: string;
+  description?: string;
+  cost_per_1k_input: number;
+  cost_per_1k_output: number;
   context_window: number;
-  input_cost_per_1k: number;
-  output_cost_per_1k: number;
-  max_output_tokens: number;
+  is_active: boolean;
 }
 
 export interface RequestLog {
   id: string;
+  user_id: string;
   gateway_key_id: string;
-  model_used: string;
+  endpoint: string;
   provider: string;
+  model: string;
   complexity: string;
-  input_tokens: number;
-  output_tokens: number;
-  cost: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  cost_usd: number;
   latency_ms: number;
-  cached: boolean;
+  cache_hit: number;
+  status_code: number;
+  error_message?: string;
   created_at: string;
 }
 
@@ -99,8 +115,8 @@ export interface AnalyticsOverview {
   total_cost: number;
   total_requests: number;
   avg_latency: number;
-  cache_rate: number;
-  period: string;
+  total_tokens: number;
+  cache_hit_rate: number;
 }
 
 export interface CostBreakdown {
@@ -154,44 +170,34 @@ export const apiClient = {
       return response.data;
     },
 
-    async create(name?: string): Promise<GatewayKey> {
-      const response = await api.post<GatewayKey>('/keys', { name });
+    async create(name?: string, rate_limit?: number): Promise<GatewayKeyCreated> {
+      const response = await api.post<GatewayKeyCreated>('/keys', { name, rate_limit });
       return response.data;
     },
 
     async delete(keyId: string): Promise<void> {
       await api.delete(`/keys/${keyId}`);
     },
-
-    async toggle(keyId: string, is_active: boolean): Promise<GatewayKey> {
-      const response = await api.patch<GatewayKey>(`/keys/${keyId}`, { is_active });
-      return response.data;
-    },
   },
 
   // Provider Keys endpoints
   providerKeys: {
     async list(): Promise<ProviderKey[]> {
-      const response = await api.get<ProviderKey[]>('/keys/providers');
+      const response = await api.get<ProviderKey[]>('/keys/providers/list');
       return response.data;
     },
 
-    async add(provider: string, api_key: string, key_name?: string): Promise<ProviderKey> {
-      const response = await api.post<ProviderKey>('/keys/providers', {
+    async add(provider: string, api_key: string): Promise<ProviderKey> {
+      const response = await api.post<ProviderKey>('/keys/providers/add', {
         provider,
         api_key,
-        key_name,
+        is_active: true,
       });
       return response.data;
     },
 
     async delete(keyId: string): Promise<void> {
       await api.delete(`/keys/providers/${keyId}`);
-    },
-
-    async validate(keyId: string): Promise<{ is_valid: boolean }> {
-      const response = await api.post<{ is_valid: boolean }>(`/keys/providers/${keyId}/validate`);
-      return response.data;
     },
   },
 
@@ -212,9 +218,9 @@ export const apiClient = {
 
   // Analytics endpoints
   analytics: {
-    async overview(period: string = '24h'): Promise<AnalyticsOverview> {
+    async overview(days: number = 1): Promise<AnalyticsOverview> {
       const response = await api.get<AnalyticsOverview>('/analytics/overview', {
-        params: { period },
+        params: { days },
       });
       return response.data;
     },
@@ -227,10 +233,17 @@ export const apiClient = {
     },
 
     async modelDistribution(days: number = 7): Promise<ModelDistribution[]> {
-      const response = await api.get<ModelDistribution[]>('/analytics/model-distribution', {
+      const response = await api.get<{ model: string; count: number }[]>('/analytics/model-distribution', {
         params: { days },
       });
-      return response.data;
+      // Calculate percentages
+      const data = response.data;
+      const total = data.reduce((sum, item) => sum + item.count, 0);
+      return data.map(item => ({
+        model: item.model,
+        count: item.count,
+        percentage: total > 0 ? (item.count / total) * 100 : 0,
+      }));
     },
 
     async recentRequests(limit: number = 20, offset: number = 0): Promise<RequestLog[]> {

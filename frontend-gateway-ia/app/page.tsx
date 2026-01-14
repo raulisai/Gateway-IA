@@ -1,8 +1,40 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, Shield, BarChart } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated, loading } = useAuth();
+
+  useEffect(() => {
+    // Si el usuario ya está autenticado, redirigir al dashboard
+    if (!loading && isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, loading, router]);
+
+  // Mostrar loading mientras se verifica la sesión
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="text-sm text-muted-foreground">Verificando sesión...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si está autenticado, no mostrar nada (se está redirigiendo)
+  if (isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
