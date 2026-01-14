@@ -1,79 +1,110 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Key, Activity, Users, TrendingUp } from 'lucide-react';
+import { DollarSign, Activity, Zap, TrendingUp } from 'lucide-react';
+import { MetricsCard } from '@/components/dashboard/metrics-card';
+import { CostChart } from '@/components/dashboard/cost-chart';
+import { ModelDistributionChart } from '@/components/dashboard/model-distribution-chart';
+import { RecentRequests } from '@/components/dashboard/recent-requests';
+import { apiClient } from '@/lib/api';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function DashboardPage() {
-  const stats = [
-    {
-      title: 'Total API Keys',
-      value: '0',
-      description: 'Keys activas',
-      icon: Key,
-    },
-    {
-      title: 'Requests Hoy',
-      value: '0',
-      description: 'Peticiones realizadas',
-      icon: Activity,
-    },
-    {
-      title: 'Proveedores',
-      value: '0',
-      description: 'Configurados',
-      icon: Users,
-    },
-    {
-      title: 'Éxito Rate',
-      value: '0%',
-      description: 'Últimas 24h',
-      icon: TrendingUp,
-    },
-  ];
+  const { isAuthenticated } = useAuth();
+
+  // Fetch analytics overview
+  const { data: overview, isLoading: overviewLoading } = useQuery({
+    queryKey: ['analytics', 'overview'],
+    queryFn: () => apiClient.analytics.overview('24h'),
+    enabled: isAuthenticated,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  // Fetch cost breakdown
+  const { data: costBreakdown, isLoading: costLoading } = useQuery({
+    queryKey: ['analytics', 'cost-breakdown'],
+    queryFn: () => apiClient.analytics.costBreakdown(7),
+    enabled: isAuthenticated,
+  });
+
+  // Fetch model distribution
+  const { data: modelDistribution, isLoading: distributionLoading } = useQuery({
+    queryKey: ['analytics', 'model-distribution'],
+    queryFn: () => apiClient.analytics.modelDistribution(7),
+    enabled: isAuthenticated,
+  });
+
+  const formatCost = (cost: number) => {
+    if (cost === 0) return '$0.00';
+    if (cost < 0.01) return `$${cost.toFixed(4)}`;
+    return `$${cost.toFixed(2)}`;
+  };
+
+  const formatLatency = (ms: number) => {
+    if (ms < 1000) return `${ms.toFixed(0)}ms`;
+    return `${(ms / 1000).toFixed(2)}s`;
+  };
 
   return (
     <div className="space-y-6 sm:space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Dashboard</h1>
         <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-          Bienvenido a tu panel de control de Gateway IA
+          Vista general de tu Gateway LLM
         </p>
       </div>
 
+      {/* Metrics Cards */}
       <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium sm:text-sm">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl font-bold sm:text-2xl">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        <MetricsCard
+          title="Costo Total (24h)"
+          value={overview ? formatCost(overview.total_cost) : '$0.00'}
+          description="Gasto en LLMs"
+          icon={DollarSign}
+          loading={overviewLoading}
+        />
+        <MetricsCard
+          title="Total Requests"
+          value={overview?.total_requests || 0}
+          description="Últimas 24 horas"
+          icon={Activity}
+          loading={overviewLoading}
+        />
+        <MetricsCard
+          title="Latencia Promedio"
+          value={overview ? formatLatency(overview.avg_latency) : '0ms'}
+          description="Tiempo de respuesta"
+          icon={Zap}
+          loading={overviewLoading}
+        />
+        <MetricsCard
+          title="Cache Hit Rate"
+          value={overview ? `${(overview.cache_rate * 100).toFixed(1)}%` : '0%'}
+          description="Respuestas en caché"
+          icon={TrendingUp}
+          loading={overviewLoading}
+        />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="md:col-span-2 lg:col-span-4">
-          <CardHeader>
-            <CardTitle className="text-base sm:text-lg">Actividad Reciente</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Últimas peticiones a tu API Gateway
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              No hay actividad reciente
-            </div>
-          </CardContent>
-        </Card>
+      {/* Charts */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <CostChart 
+          data={costBreakdown || []} 
+          loading={costLoading}
+        />
+        <ModelDistributionChart 
+          data={modelDistribution || []} 
+          loading={distributionLoading}
+        />
+      </div>
 
+      {/* Recent Requests */}
+      <RecentRequests />
+
+      {/* Additional Info */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="md:col-span-2 lg:col-span-3">
           <CardHeader>
             <CardTitle className="text-base sm:text-lg">Inicio Rápido</CardTitle>
