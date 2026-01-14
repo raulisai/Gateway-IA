@@ -1,0 +1,4 @@
+2026-01-13 23:47:22,826 - app.core.middleware - INFO - REQ_START: GET /docs
+2026-01-13 23:47:22,829 - app.core.middleware - INFO - REQ_END: GET /docs Status: 200 Duration: 2.61ms
+2026-01-13 23:47:22,920 - app.core.middleware - INFO - REQ_START: GET /api/v1/openapi.json
+2026-01-13 23:47:22,965 - app.core.middleware - INFO - REQ_END: GET /api/v1/openapi.json Status: 200 Duration: 45.09ms
