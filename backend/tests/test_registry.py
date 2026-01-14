@@ -6,7 +6,7 @@ from pathlib import Path
 from app.core.registry import ModelRegistry, model_registry
 
 # Use a temporary file for testing
-TEST_MODELS_FILE = "backend/data/test_models.json"
+TEST_MODELS_FILE = Path(__file__).parent / "test_models.json"
 
 @pytest.fixture
 def mock_registry_file():
