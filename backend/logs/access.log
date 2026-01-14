@@ -4,3 +4,11 @@
 2026-01-13 23:47:22,965 - app.core.middleware - INFO - REQ_END: GET /api/v1/openapi.json Status: 200 Duration: 45.09ms
 2026-01-14 00:00:46,472 - app.core.registry - INFO - Detected change in models.json, reloading...
 2026-01-14 00:00:46,473 - app.core.registry - INFO - Loaded 20 models from data\models.json
+2026-01-14 00:22:37,481 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:22:37,597 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 115.96ms
+2026-01-14 00:22:37,605 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:22:37,640 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 36.71ms
+2026-01-14 00:22:49,501 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:22:49,511 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 10.17ms
+2026-01-14 00:22:49,514 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:22:49,526 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 11.19ms
