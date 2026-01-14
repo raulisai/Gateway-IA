@@ -9,19 +9,42 @@ from app.core.classifier.service import request_classifier
 from app.core.router.engine import routing_engine
 from app.core.providers.manager import provider_manager
 from app.schemas.router import RoutingRequirements, RoutingStrategy
-from app.schemas.llm import GenerationRequest, GenerationResponse
+from app.schemas.llm import GenerationRequest, GenerationResponse 
 from app.core.registry import model_registry
+from app.core.cache.service import cache_manager
+from app.core.usage.logger import usage_logger
+from app.schemas.gateway_key import GatewayKeyCreate
+import uuid
+import time
+from app.core.usage.logger import usage_logger
+from app.schemas.gateway_key import GatewayKeyCreate
+import uuid
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+from fastapi import Request
+from app.core.limiter import limiter
 
 class GatewayRequest(schemas.llm.GenerationRequest):
     # We inherit basic fields like messages, max_tokens, etc.
     # We can add a strategy field here if we want users to control it
     routing_strategy: RoutingStrategy = RoutingStrategy.BALANCED
 
+@router.get("/cache/metrics")
+async def get_cache_metrics(
+    current_user: models.User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get cache performance metrics.
+    """
+    # We could restrict this to admins if needed
+    return cache_manager.metrics
+
 @router.post("/chat/completions", response_model=GenerationResponse)
+@limiter.limit("100/minute")
 async def gateway_chat_completions(
+    request: Request,
     *,
     db: Session = Depends(deps.get_db),
     payload: GatewayRequest,
@@ -32,15 +55,59 @@ async def gateway_chat_completions(
     Orchestrates classification, intelligent routing, and multi-provider execution.
     """
     try:
-        # 1. Classification
-        # Analyze messages to detect complexity and features
+        start_time = time.time()
+        
+        # 0. Auth & Key Setup (needed for logging)
+        # Get or create a gateway key for the user (Auto-provision for dashboard)
+        user_keys = crud.gateway_key.get_keys_by_user(db, user_id=current_user.id)
+        if user_keys:
+            gateway_key_id = user_keys[0].id
+        else:
+            new_key = crud.gateway_key.create_gateway_key(
+                db, 
+                obj_in=GatewayKeyCreate(name="Default Dashboard Key", rate_limit=1000), 
+                user_id=current_user.id, 
+                key_hash=f"auto-{uuid.uuid4()}",
+                prefix="sk-auto"
+            )
+            gateway_key_id = new_key.id
+
+        # 1. Classification (Always run to determine complexity for logging)
         classification = request_classifier.analyze(payload.messages)
         logger.info(f"Request classification: {classification.json()}")
 
-        # 2. Routing
+        # 2. Cache Lookup
+        cache_params = {
+            "max_tokens": payload.max_tokens,
+            "temperature": payload.temperature,
+            "top_p": payload.top_p,
+            "stop_sequences": payload.stop_sequences,
+            "routing_strategy": payload.routing_strategy
+        }
+        
+        cached_response = cache_manager.get_response(payload.messages, cache_params)
+        if cached_response:
+            logger.info("Returning cached response")
+            # Log Cache Hit
+            await usage_logger.log_request(
+                db,
+                user_id=current_user.id,
+                gateway_key_id=gateway_key_id,
+                endpoint="/chat/completions",
+                provider="cache",
+                model=cached_response.model_used,
+                complexity=classification.complexity,
+                usage=cached_response.usage,
+                latency_ms=int((time.time() - start_time) * 1000),
+                status_code=200,
+                cache_hit=True
+            )
+            return cached_response
+
+        # 3. Routing
         # Get providers for which the user has keys
-        user_keys = crud.provider_key.get_provider_keys_by_user(db, user_id=current_user.id)
-        available_providers = [pk.provider for pk in user_keys]
+        user_keys_db = crud.provider_key.get_provider_keys_by_user(db, user_id=current_user.id)
+        available_providers = [pk.provider for pk in user_keys_db]
         
         # Determine the best model based on classification result and user strategy
         requirements = RoutingRequirements(
@@ -56,8 +123,8 @@ async def gateway_chat_completions(
             available_providers=available_providers
         )
         logger.info(f"Routing result: {routing_result.json()}")
-
-        # 3. Execution
+ 
+        # 4. Execution
         # Find the original model ID in registry
         model_def = model_registry.get_model(routing_result.selected_model_id)
         if not model_def:
@@ -83,9 +150,28 @@ async def gateway_chat_completions(
             user_id=current_user.id
         )
 
-        # 4. Success Response
+        # 5. Success Response
         # We might want to inject our internal model id back into the response
         response.model_used = model_def.id
+        
+        # 6. Cache Store
+        cache_manager.store_response(payload.messages, cache_params, response)
+        
+        # 7. Usage Logging
+        await usage_logger.log_request(
+            db,
+            user_id=current_user.id,
+            gateway_key_id=gateway_key_id,
+            endpoint="/chat/completions",
+            provider=model_def.provider,
+            model=model_def.id,
+            complexity=classification.complexity,
+            usage=response.usage,
+            latency_ms=int((time.time() - start_time) * 1000), 
+            status_code=200,
+            cache_hit=False
+        )
+
         return response
 
     except ValueError as e:
