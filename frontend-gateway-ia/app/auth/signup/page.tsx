@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
-import { authService } from '@/lib/auth';
+import { useAuth } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -40,7 +39,7 @@ const signupSchema = z.object({
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
-  const router = useRouter();
+  const { signup } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,20 +56,15 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     try {
-      await authService.signup({
-        email: data.email,
-        password: data.password,
-        full_name: data.full_name,
-      });
+      await signup(data.email, data.password, data.full_name);
       toast({
         title: 'Éxito',
-        description: 'Cuenta creada correctamente. Por favor inicia sesión.',
+        description: 'Cuenta creada correctamente. Redirigiendo al dashboard...',
       });
-      router.push('/auth/login');
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.detail || 'Error al crear la cuenta',
+        description: error.message || 'Error al crear la cuenta',
         variant: 'destructive',
       });
     } finally {

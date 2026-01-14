@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
-import { authService } from '@/lib/auth';
+import { useAuth } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,7 +34,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { login } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,16 +49,15 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      await authService.login(data);
+      await login(data.email, data.password);
       toast({
         title: 'Éxito',
         description: 'Has iniciado sesión correctamente',
       });
-      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.detail || 'Credenciales incorrectas',
+        description: error.message || 'Credenciales incorrectas',
         variant: 'destructive',
       });
     } finally {
