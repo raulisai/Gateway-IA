@@ -38,6 +38,10 @@ async def gateway_chat_completions(
         logger.info(f"Request classification: {classification.json()}")
 
         # 2. Routing
+        # Get providers for which the user has keys
+        user_keys = crud.provider_key.get_provider_keys_by_user(db, user_id=current_user.id)
+        available_providers = [pk.provider for pk in user_keys]
+        
         # Determine the best model based on classification result and user strategy
         requirements = RoutingRequirements(
             input_tokens=classification.tokens,
@@ -48,7 +52,8 @@ async def gateway_chat_completions(
         
         routing_result = routing_engine.select_model(
             requirements, 
-            strategy=payload.routing_strategy
+            strategy=payload.routing_strategy,
+            available_providers=available_providers
         )
         logger.info(f"Routing result: {routing_result.json()}")
 

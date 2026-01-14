@@ -30,7 +30,8 @@ class RequestClassifier:
             tokens = token_counter.count_messages(prompt)
             # Naive concatenation for feature analysis
             for msg in prompt:
-                text_content += str(msg.get("content", "")) + "\n"
+                content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+                text_content += str(content) + "\n"
         else:
             tokens = token_counter.count_tokens(prompt)
             text_content = prompt

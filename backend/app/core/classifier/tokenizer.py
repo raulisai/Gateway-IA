@@ -50,7 +50,9 @@ class TokenCounter:
         num_tokens = 0
         for message in messages:
             num_tokens += tokens_per_message
-            for key, value in message.items():
+            # Handle Pydantic models or dicts
+            msg_dict = message if isinstance(message, dict) else message.model_dump(exclude_none=True)
+            for key, value in msg_dict.items():
                 num_tokens += len(encoding.encode(str(value)))
                 if key == "name":
                     num_tokens += tokens_per_name

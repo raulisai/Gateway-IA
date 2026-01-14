@@ -11,7 +11,8 @@ class RoutingEngine:
     def select_model(
         self, 
         requirements: RoutingRequirements, 
-        strategy: RoutingStrategy = RoutingStrategy.BALANCED
+        strategy: RoutingStrategy = RoutingStrategy.BALANCED,
+        available_providers: Optional[List[str]] = None
     ) -> RoutingResult:
         """
         Selects the best model based on requirements and strategy.
@@ -24,6 +25,7 @@ class RoutingEngine:
         candidates = self._filter_context_window(candidates, requirements)
         candidates = self._filter_features(candidates, requirements)
         candidates = self._filter_provider_preference(candidates, requirements)
+        candidates = self._filter_available_providers(candidates, available_providers)
         
         if not candidates:
             # Emergency fallback or error
@@ -124,6 +126,13 @@ class RoutingEngine:
             )
             return models
         return filtered
+
+    def _filter_available_providers(
+        self, models: List[ModelDefinition], available_providers: Optional[List[str]]
+    ) -> List[ModelDefinition]:
+        if available_providers is None:
+            return models
+        return [m for m in models if m.provider in available_providers]
 
 # Global instance
 routing_engine = RoutingEngine()

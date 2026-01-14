@@ -15,7 +15,7 @@ class Message(BaseModel):
 
 class GenerationRequest(BaseModel):
     messages: List[Message]
-    model_id: str
+    model_id: Optional[str] = None
     max_tokens: Optional[int] = None
     temperature: Optional[float] = 0.7
     top_p: Optional[float] = 1.0

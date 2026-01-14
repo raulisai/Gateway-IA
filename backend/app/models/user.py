@@ -10,6 +10,7 @@ class User(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    full_name = Column(String, nullable=True)
     plan = Column(String, default="free")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, onupdate=lambda: datetime.now(timezone.utc))

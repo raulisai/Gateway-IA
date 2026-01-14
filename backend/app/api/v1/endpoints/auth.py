@@ -59,7 +59,7 @@ def login_access_token(
 
 @router.post("/login", response_model=Token)
 def login(
-    db: Session = Depends(get_db), user_in: UserCreate = None # Simplified login for JSON
+    user_in: UserCreate, db: Session = Depends(get_db)
 ) -> Any:
     """
     Generic login endpoint (JSON based)
@@ -77,6 +77,15 @@ def login(
         ),
         "token_type": "bearer",
     }
+
+@router.get("/me", response_model=User)
+def read_user_me(
+    current_user: UserModel = Depends(get_current_user),
+) -> Any:
+    """
+    Get current user.
+    """
+    return current_user
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
 def logout(

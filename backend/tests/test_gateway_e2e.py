@@ -45,7 +45,10 @@ async def test_gateway_e2e_flow():
             finish_reason="stop"
         )
         
-        with patch("app.api.v1.endpoints.gateway.provider_manager.execute_request", new_callable=AsyncMock) as mock_exec:
+        with patch("app.api.v1.endpoints.gateway.crud.provider_key.get_provider_keys_by_user") as mock_keys, \
+             patch("app.api.v1.endpoints.gateway.provider_manager.execute_request", new_callable=AsyncMock) as mock_exec:
+            
+            mock_keys.return_value = [MagicMock(provider="openai")]
             mock_exec.return_value = mock_response
             
             # 3. Send Gateway Request
@@ -77,9 +80,13 @@ async def test_gateway_e2e_flow():
 @pytest.mark.asyncio
 async def test_gateway_error_handling_no_keys():
     async with AsyncClient(app=app, base_url="http://test") as ac:
-        # Login
-        email = "gateway-e2e@example.com"
+        # 1. Setup: Create and login user
+        email = "no-keys-user@example.com"
         password = "testpassword"
+        await ac.post(
+            f"{settings.API_V1_STR}/auth/signup",
+            json={"email": email, "password": password}
+        )
         login_res = await ac.post(
             f"{settings.API_V1_STR}/auth/login",
             json={"email": email, "password": password}
@@ -101,6 +108,6 @@ async def test_gateway_error_handling_no_keys():
             headers=headers
         )
         
-        # Should return 400 Bad Request due to missing API key logic in Manager
+        # Should return 400 Bad Request due to no models available (no keys)
         assert res.status_code == 400
-        assert "No API key found" in res.json()["detail"]
+        assert "No models available" in res.json()["detail"]

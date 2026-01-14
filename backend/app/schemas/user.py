@@ -4,6 +4,7 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     email: EmailStr
+    full_name: Optional[str] = None
     is_active: Optional[bool] = True
     plan: Optional[str] = "free"
 

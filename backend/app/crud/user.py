@@ -11,6 +11,7 @@ def create_user(db: Session, obj_in: UserCreate) -> User:
     db_obj = User(
         email=obj_in.email,
         password_hash=get_password_hash(obj_in.password),
+        full_name=obj_in.full_name,
         plan=obj_in.plan,
     )
     db.add(db_obj)
