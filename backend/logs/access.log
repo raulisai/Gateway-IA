@@ -250,3 +250,25 @@
 2026-01-14 00:19:53,511 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 64.04ms
 2026-01-14 00:19:55,550 - app.core.middleware - INFO - REQ_START: POST /api/v1/auth/logout
 2026-01-14 00:19:55,573 - app.core.middleware - INFO - REQ_END: POST /api/v1/auth/logout Status: 200 Duration: 23.28ms
+2026-01-14 00:31:24,123 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:31:24,166 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 43.59ms
+2026-01-14 00:31:24,169 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 00:31:24,177 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 8.18ms
+2026-01-14 00:31:24,217 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 00:31:24,228 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 10.32ms
+2026-01-14 00:31:24,231 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 00:31:24,248 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 17.31ms
+2026-01-14 00:31:24,252 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/cost-breakdown
+2026-01-14 00:31:24,263 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 10.78ms
+2026-01-14 00:31:24,266 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
+2026-01-14 00:31:24,272 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 7.62ms
+2026-01-14 00:31:30,539 - app.core.middleware - INFO - REQ_START: GET /api/v1/models
+2026-01-14 00:31:30,541 - app.core.middleware - INFO - REQ_END: GET /api/v1/models Status: 307 Duration: 2.01ms
+2026-01-14 00:31:30,551 - app.core.middleware - INFO - REQ_START: GET /api/v1/models/
+2026-01-14 00:31:30,562 - app.core.middleware - INFO - REQ_END: GET /api/v1/models/ Status: 200 Duration: 11.79ms
+2026-01-14 00:31:33,067 - app.core.middleware - INFO - REQ_START: GET /api/v1/keys
+2026-01-14 00:31:33,069 - app.core.middleware - INFO - REQ_START: GET /api/v1/keys/providers/list
+2026-01-14 00:31:33,070 - app.core.middleware - INFO - REQ_END: GET /api/v1/keys Status: 307 Duration: 3.67ms
+2026-01-14 00:31:33,078 - app.core.middleware - INFO - REQ_START: GET /api/v1/keys/
+2026-01-14 00:31:33,087 - app.core.middleware - INFO - REQ_END: GET /api/v1/keys/providers/list Status: 200 Duration: 17.97ms
+2026-01-14 00:31:33,100 - app.core.middleware - INFO - REQ_END: GET /api/v1/keys/ Status: 200 Duration: 21.91ms
