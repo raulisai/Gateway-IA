@@ -376,4 +376,32 @@ Fase 5: Testing/Prod      [▱▱▱▱▱] 0/5   checkpoints
 Total Progress: 10% (5/50)
 ```
 
+---
+
+## 🎯 Notas de Implementación
+
+### Orden Recomendado
+1. **No saltar fases**: Cada checkpoint depende de los anteriores
+2. **Testear continuamente**: Verificar cada checkpoint antes de avanzar
+3. **Commits frecuentes**: Hacer commit después de cada checkpoint completado
+4. **Documentar decisiones**: Anotar cambios importantes en el proceso
+
+### Tiempo Estimado por Fase
+- Fase 0: 1-2 días
+- Fase 1: 5-7 días
+- Fase 2: 3-4 días
+- Fase 3: 4-5 días
+- Fase 4: 2-3 días
+- Fase 5: 2-3 días
+
+**Total estimado**: 17-24 días de desarrollo full-time
+
+### Criterios de Éxito de Checkpoint
+- ✅ Funcionalidad implementada y testeada
+- ✅ Código commiteado en Git
+- ✅ Documentación actualizada
+- ✅ Tests unitarios pasando (cuando aplique)
+
+---
+
 *Última actualización: 2026-01-11*

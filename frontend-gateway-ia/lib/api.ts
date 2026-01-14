@@ -40,6 +40,25 @@ api.interceptors.response.use(
   }
 );
 
+export interface RoutingInfo {
+  complexity_score: number;
+  complexity_level: string;
+  model_name: string;
+  provider: string;
+  reasoning: string;
+}
+
+export interface GenerationResponse {
+  content: string;
+  usage?: {
+    input_tokens: number;
+    output_tokens: number;
+    total_tokens: number;
+  };
+  model_used: string;
+  routing_info?: RoutingInfo;
+}
+
 // Types
 export interface User {
   id: string;
@@ -256,12 +275,13 @@ export const apiClient = {
 
   // Gateway Chat endpoint
   chat: {
-    async completions(messages: any[], model?: string, temperature?: number): Promise<any> {
-      const response = await api.post('/chat/completions', {
-        messages,
-        model,
-        temperature,
-      });
+    async complete(params: {
+      messages: any[],
+      model_id?: string,
+      max_tokens?: number,
+      temperature?: number
+    }): Promise<GenerationResponse> {
+      const response = await api.post<GenerationResponse>('/chat/completions', params);
       return response.data;
     },
   },

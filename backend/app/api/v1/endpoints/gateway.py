@@ -171,6 +171,22 @@ async def gateway_chat_completions(
             status_code=200,
             cache_hit=False
         )
+        
+        # 8. Enrich Response with Routing Info for Playground/Testing
+        complexity_map = {
+            "simple": 0.25,
+            "moderate": 0.5,
+            "complex": 0.75,
+            "expert": 1.0
+        }
+        
+        response.routing_info = schemas.llm.RoutingInfo(
+            complexity_score=complexity_map.get(classification.complexity, 0.0),
+            complexity_level=classification.complexity,
+            model_name=model_def.name,
+            provider=model_def.provider,
+            reasoning=f"Matched complexity level {classification.complexity} with requirements: {classification.detected_features}"
+        )
 
         return response
 
