@@ -9,3 +9,6 @@ node_modules/*
 __pycache__
 
 package-lock.json
+access.log
+error.log
+*.log
