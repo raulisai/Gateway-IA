@@ -2,3 +2,5 @@
 2026-01-13 23:47:22,829 - app.core.middleware - INFO - REQ_END: GET /docs Status: 200 Duration: 2.61ms
 2026-01-13 23:47:22,920 - app.core.middleware - INFO - REQ_START: GET /api/v1/openapi.json
 2026-01-13 23:47:22,965 - app.core.middleware - INFO - REQ_END: GET /api/v1/openapi.json Status: 200 Duration: 45.09ms
+2026-01-14 00:00:46,472 - app.core.registry - INFO - Detected change in models.json, reloading...
+2026-01-14 00:00:46,473 - app.core.registry - INFO - Loaded 20 models from data\models.json
