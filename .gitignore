@@ -7,7 +7,9 @@ node_modules/
 dist/
 build/
 *.log
+logs/
 backend/logs/
+**/logs/*.log
 __pycache__/
 .claude/
 package-lock.json
