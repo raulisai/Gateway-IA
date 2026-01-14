@@ -23,8 +23,9 @@ def mock_classifier():
 async def test_gateway_e2e_flow():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         # 1. Setup: Create and login user
-        email = "gateway-e2e@example.com"
-        password = "testpassword"
+        import uuid
+        email = f"gateway-e2e-{uuid.uuid4().hex[:8]}@example.com"
+        password = "TestPassword123"
         await ac.post(
             f"{settings.API_V1_STR}/auth/signup",
             json={"email": email, "password": password}
@@ -81,8 +82,9 @@ async def test_gateway_e2e_flow():
 async def test_gateway_error_handling_no_keys():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         # 1. Setup: Create and login user
-        email = "no-keys-user@example.com"
-        password = "testpassword"
+        import uuid
+        email = f"no-keys-user-{uuid.uuid4().hex[:8]}@example.com"
+        password = "TestPassword123"
         await ac.post(
             f"{settings.API_V1_STR}/auth/signup",
             json={"email": email, "password": password}

@@ -9,7 +9,7 @@ async def test_provider_keys_crud_flow():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         # 1. Setup: Create and login user
         email = "providertest@example.com"
-        password = "testpassword"
+        password = "TestPassword123"
         await ac.post(
             f"{settings.API_V1_STR}/auth/signup",
             json={"email": email, "password": password}

@@ -26,13 +26,13 @@ def db_session():
         Base.metadata.drop_all(bind=engine)
 
 def test_create_user(db_session):
-    user_in = UserCreate(email="test@example.com", password="password123")
+    user_in = UserCreate(email="test@example.com", password="Password123")  # Updated: Strong password
     user = create_user(db_session, user_in)
     assert user.email == "test@example.com"
     assert user.id is not None
 
 def test_get_user_by_email(db_session):
-    user_in = UserCreate(email="findme@example.com", password="password123")
+    user_in = UserCreate(email="findme@example.com", password="Password123")  # Updated: Strong password
     create_user(db_session, user_in)
     user = get_user_by_email(db_session, email="findme@example.com")
     assert user is not None
@@ -40,25 +40,29 @@ def test_get_user_by_email(db_session):
 
 def test_relationships(db_session):
     # 1. Create User
-    user_in = UserCreate(email="rel@example.com", password="password123")
+    user_in = UserCreate(email="rel@example.com", password="Password123")  # Updated: Strong password
     user = create_user(db_session, user_in)
     
     # 2. Create GatewayKey for User
     gw_in = GatewayKeyCreate(
-        user_id=user.id, 
-        key_hash="hash123", 
-        prefix="gw_test", 
-        name="Test Key"
+        name="Test Key",
+        rate_limit=1000
     )
-    gw_key = create_gateway_key(db_session, gw_in)
+    gw_key = create_gateway_key(
+        db_session,
+        obj_in=gw_in,
+        user_id=user.id,
+        key_hash="hash123",
+        prefix="gw_test"
+    )
     
     # 3. Create ProviderKey for User
-    prov_in = ProviderKeyCreate(
+    prov_key = create_provider_key(
+        db_session,
         user_id=user.id,
         provider="openai",
-        encrypted_key="secret"
+        raw_key="sk-test-key-123"
     )
-    prov_key = create_provider_key(db_session, prov_in)
     
     # 4. Verify Relationships
     db_session.refresh(user)

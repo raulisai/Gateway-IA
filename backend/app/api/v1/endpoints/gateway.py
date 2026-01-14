@@ -76,7 +76,7 @@ async def gateway_chat_completions(
         classification = request_classifier.analyze(payload.messages)
         logger.info(f"Request classification: {classification.json()}")
 
-        # 2. Cache Lookup
+        # 2. Cache Lookup (with user_id for isolation)
         cache_params = {
             "max_tokens": payload.max_tokens,
             "temperature": payload.temperature,
@@ -84,8 +84,8 @@ async def gateway_chat_completions(
             "stop_sequences": payload.stop_sequences,
             "routing_strategy": payload.routing_strategy
         }
-        
-        cached_response = cache_manager.get_response(payload.messages, cache_params)
+
+        cached_response = cache_manager.get_response(payload.messages, cache_params, user_id=current_user.id)
         if cached_response:
             logger.info("Returning cached response")
             # Log Cache Hit
@@ -154,8 +154,8 @@ async def gateway_chat_completions(
         # We might want to inject our internal model id back into the response
         response.model_used = model_def.id
         
-        # 6. Cache Store
-        cache_manager.store_response(payload.messages, cache_params, response)
+        # 6. Cache Store (with user_id for isolation)
+        cache_manager.store_response(payload.messages, cache_params, response, user_id=current_user.id)
         
         # 7. Usage Logging
         await usage_logger.log_request(

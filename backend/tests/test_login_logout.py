@@ -8,7 +8,7 @@ async def test_login_and_logout():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         # 1. Signup
         email = "login_test@example.com"
-        password = "testpassword"
+        password = "TestPassword123"
         await ac.post(
             f"{settings.API_V1_STR}/auth/signup",
             json={"email": email, "password": password}

@@ -22,49 +22,53 @@ class CacheManager:
         self._hits = 0
         self._misses = 0
 
-    def _generate_key(self, messages: List[Message], params: Dict[str, Any]) -> str:
+    def _generate_key(self, messages: List[Message], params: Dict[str, Any], user_id: Optional[str] = None) -> str:
         """
-        Generate a unique cache key based on messages and request parameters.
+        Generate a unique cache key based on messages, request parameters, and user_id.
+        Including user_id prevents cross-user cache leaks.
         """
         # Convert messages to a stable list of dicts
         msg_data = [m.model_dump() if hasattr(m, 'model_dump') else m.dict() for m in messages]
-        
+
         # Sort params to ensure consistent hashing
         sorted_params = {k: params[k] for k in sorted(params.keys()) if params[k] is not None}
-        
-        # Create a payload for hashing
+
+        # Create a payload for hashing - IMPORTANT: Include user_id to prevent cross-user cache leaks
         payload = {
+            "user_id": user_id,  # Security: Isolate cache by user
             "messages": msg_data,
             "params": sorted_params
         }
-        
+
         # Serialize and hash
         payload_str = json.dumps(payload, sort_keys=True)
         return hashlib.sha256(payload_str.encode()).hexdigest()
 
-    def get_response(self, messages: List[Message], params: Dict[str, Any]) -> Optional[GenerationResponse]:
+    def get_response(self, messages: List[Message], params: Dict[str, Any], user_id: Optional[str] = None) -> Optional[GenerationResponse]:
         """
         Retrieve a response from the cache if available.
+        Requires user_id to ensure cache isolation between users.
         """
-        key = self._generate_key(messages, params)
+        key = self._generate_key(messages, params, user_id)
         response = self._cache.get(key)
-        
+
         if response:
             self._hits += 1
-            logger.info(f"Cache HIT for key: {key[:8]}...")
+            logger.info(f"Cache HIT for key: {key[:8]}... (user: {user_id})")
             return response
-        
+
         self._misses += 1
-        logger.info(f"Cache MISS for key: {key[:8]}...")
+        logger.info(f"Cache MISS for key: {key[:8]}... (user: {user_id})")
         return None
 
-    def store_response(self, messages: List[Message], params: Dict[str, Any], response: GenerationResponse):
+    def store_response(self, messages: List[Message], params: Dict[str, Any], response: GenerationResponse, user_id: Optional[str] = None):
         """
         Store a response in the cache.
+        Requires user_id to ensure cache isolation between users.
         """
-        key = self._generate_key(messages, params)
+        key = self._generate_key(messages, params, user_id)
         self._cache[key] = response
-        logger.info(f"Stored response in cache with key: {key[:8]}...")
+        logger.info(f"Stored response in cache with key: {key[:8]}... (user: {user_id})")
 
     @property
     def metrics(self) -> Dict[str, Any]:

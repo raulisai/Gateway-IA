@@ -54,9 +54,9 @@ def test_http_exception_handler():
     response = client.get("/error/http")
     assert response.status_code == 404
     data = response.json()
-    assert "error" in data
-    assert data["error"]["code"] == "http_error"
-    assert data["error"]["message"] == "Item not found"
+    # Updated: Error handler now returns standard FastAPI format
+    assert "detail" in data
+    assert data["detail"] == "Item not found"
 
 def test_validation_exception_handler():
     # Send invalid data (name too short)

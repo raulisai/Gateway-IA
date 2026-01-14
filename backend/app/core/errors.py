@@ -14,7 +14,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     logger.warning(f"HTTP error {exc.status_code} at {request.url}: {exc.detail}")
     return JSONResponse(
         status_code=exc.status_code,
-        content={"error": {"code": "http_error", "message": str(exc.detail)}},
+        content={"detail": str(exc.detail)},
     )
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
