@@ -1,11 +1,13 @@
 
-
 .env
 backend/venv
 .pytest_cache
-node_modules/*
-.next/*
-
-__pycache__
-
+node_modules/
+.next/
+dist/
+build/
+*.log
+backend/logs/
+__pycache__/
+.claude/
 package-lock.json
