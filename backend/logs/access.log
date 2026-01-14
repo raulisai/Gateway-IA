@@ -138,3 +138,59 @@
 2026-01-14 01:03:17,601 - app.core.middleware - INFO - REQ_START: GET /api/v1/keys/
 2026-01-14 01:03:17,605 - app.core.middleware - INFO - REQ_END: GET /api/v1/keys/providers/list Status: 200 Duration: 10.30ms
 2026-01-14 01:03:17,609 - app.core.middleware - INFO - REQ_END: GET /api/v1/keys/ Status: 200 Duration: 7.82ms
+2026-01-14 01:08:13,364 - app.core.middleware - INFO - REQ_START: GET /api/v1/models
+2026-01-14 01:08:13,373 - app.core.middleware - INFO - REQ_END: GET /api/v1/models Status: 307 Duration: 8.97ms
+2026-01-14 01:08:13,381 - app.core.middleware - INFO - REQ_START: GET /api/v1/models/
+2026-01-14 01:08:13,390 - app.core.middleware - INFO - REQ_END: GET /api/v1/models/ Status: 200 Duration: 8.60ms
+2026-01-14 01:09:50,219 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 01:09:50,226 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 7.53ms
+2026-01-14 01:09:52,722 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 01:09:52,747 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 24.84ms
+2026-01-14 11:04:55,746 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 11:04:55,838 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 91.14ms
+2026-01-14 11:04:55,842 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 11:04:55,850 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 8.14ms
+2026-01-14 11:05:01,726 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 11:05:01,733 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 7.33ms
+2026-01-14 11:05:01,736 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 11:05:01,749 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 12.79ms
+2026-01-14 11:05:01,751 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/cost-breakdown
+2026-01-14 11:05:01,759 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 8.33ms
+2026-01-14 11:05:01,761 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
+2026-01-14 11:05:01,766 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 5.12ms
+2026-01-14 11:05:23,154 - app.core.middleware - INFO - REQ_START: POST /api/v1/chat/completions
+2026-01-14 11:05:23,571 - app.api.v1.endpoints.gateway - INFO - Request classification: {"complexity":"simple","tokens":10,"detected_features":[],"recommended_provider":"openai","reasoning":"Request length is 10 tokens. Short and simple request."}
+2026-01-14 11:05:23,571 - app.core.cache.service - INFO - Cache MISS for key: 8c6b31ce...
+2026-01-14 11:05:23,573 - app.api.v1.endpoints.gateway - INFO - Routing result: {"selected_model_id":"gpt-4o-mini","fallback_models":["gpt-4o","gpt-4-turbo"],"reasoning":"Selected gpt-4o-mini with score 81.25. Strategy: RoutingStrategy.BALANCED","strategy_used":"balanced"}
+2026-01-14 11:05:25,322 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-14 11:05:25,340 - app.core.cache.service - INFO - Stored response in cache with key: 8c6b31ce...
+2026-01-14 11:05:25,349 - app.api.v1.endpoints.gateway - ERROR - Gateway logic error: 1 validation error for RoutingInfo
+complexity_score
+  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='simple', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.10/v/float_parsing
+2026-01-14 11:05:25,351 - app.core.errors - WARNING - HTTP error 400 at http://localhost:8000/api/v1/chat/completions: 1 validation error for RoutingInfo
+complexity_score
+  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='simple', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.10/v/float_parsing
+2026-01-14 11:05:25,352 - app.core.middleware - INFO - REQ_END: POST /api/v1/chat/completions Status: 400 Duration: 2197.32ms
+2026-01-14 11:06:05,038 - app.core.middleware - INFO - REQ_START: GET /api/v1/models
+2026-01-14 11:06:05,041 - app.core.middleware - INFO - REQ_END: GET /api/v1/models Status: 307 Duration: 2.34ms
+2026-01-14 11:06:05,047 - app.core.middleware - INFO - REQ_START: GET /api/v1/models/
+2026-01-14 11:06:05,074 - app.core.middleware - INFO - REQ_END: GET /api/v1/models/ Status: 200 Duration: 27.32ms
+2026-01-14 11:06:48,380 - app.core.middleware - INFO - REQ_START: GET /api/v1/auth/me
+2026-01-14 11:06:48,387 - app.core.middleware - INFO - REQ_END: GET /api/v1/auth/me Status: 200 Duration: 6.41ms
+2026-01-14 11:07:05,956 - app.core.middleware - INFO - REQ_START: POST /api/v1/chat/completions
+2026-01-14 11:07:06,623 - app.api.v1.endpoints.gateway - INFO - Request classification: {"complexity":"simple","tokens":10,"detected_features":[],"recommended_provider":"openai","reasoning":"Request length is 10 tokens. Short and simple request."}
+2026-01-14 11:07:06,624 - app.core.cache.service - INFO - Cache MISS for key: 8c6b31ce...
+2026-01-14 11:07:06,628 - app.api.v1.endpoints.gateway - INFO - Routing result: {"selected_model_id":"gpt-4o-mini","fallback_models":["gpt-4o","gpt-4-turbo"],"reasoning":"Selected gpt-4o-mini with score 81.25. Strategy: RoutingStrategy.BALANCED","strategy_used":"balanced"}
+2026-01-14 11:07:07,904 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-14 11:07:07,907 - app.core.cache.service - INFO - Stored response in cache with key: 8c6b31ce...
+2026-01-14 11:07:07,934 - app.core.middleware - INFO - REQ_END: POST /api/v1/chat/completions Status: 200 Duration: 1977.09ms
+2026-01-14 11:07:29,315 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 11:07:29,333 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 17.85ms
+2026-01-14 11:07:29,336 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 11:07:29,369 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 33.13ms
+2026-01-14 11:07:29,372 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/cost-breakdown
+2026-01-14 11:07:29,381 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 10.01ms
+2026-01-14 11:07:29,384 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
+2026-01-14 11:07:29,394 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 10.13ms

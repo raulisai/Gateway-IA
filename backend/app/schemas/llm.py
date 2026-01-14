@@ -26,9 +26,19 @@ class GenerationUsage(BaseModel):
     output_tokens: int
     total_tokens: int
 
+class RoutingInfo(BaseModel):
+    complexity_score: float
+    complexity_level: str
+    model_name: str
+    provider: str
+    reasoning: str
+
+
 class GenerationResponse(BaseModel):
     content: str
     usage: Optional[GenerationUsage] = None
     model_used: str
     finish_reason: Optional[str] = None
+    routing_info: Optional[RoutingInfo] = None
     provider_specific_response: Optional[Any] = Field(None, description="Raw response for debugging")
+
