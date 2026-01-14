@@ -228,3 +228,22 @@ complexity_score
 2026-01-14 11:44:23,637 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 6.51ms
 2026-01-14 11:44:23,639 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
 2026-01-14 11:44:23,646 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 6.83ms
+2026-01-14 17:28:42,433 - app.core.middleware - INFO - REQ_START: POST /api/v1/chat/completions
+2026-01-14 17:28:42,444 - app.api.v1.endpoints.gateway - INFO - Request classification: {"complexity":"simple","tokens":10,"detected_features":[],"recommended_provider":"openai","reasoning":"Request length is 10 tokens. Short and simple request."}
+2026-01-14 17:28:42,444 - app.core.cache.service - INFO - Cache MISS for key: 8b018481...
+2026-01-14 17:28:42,445 - app.api.v1.endpoints.gateway - INFO - Routing result: {"selected_model_id":"gpt-4o-mini","fallback_models":["gpt-4o","gpt-4-turbo"],"reasoning":"Selected gpt-4o-mini with score 81.25. Strategy: RoutingStrategy.BALANCED","strategy_used":"balanced"}
+2026-01-14 17:28:44,079 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-01-14 17:28:44,081 - app.core.cache.service - INFO - Stored response in cache with key: 8b018481...
+2026-01-14 17:28:44,100 - app.core.middleware - INFO - REQ_END: POST /api/v1/chat/completions Status: 200 Duration: 1666.60ms
+2026-01-14 17:29:03,253 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 17:29:03,255 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 17:29:03,271 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 15.08ms
+2026-01-14 17:29:03,271 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 17.70ms
+2026-01-14 17:29:03,272 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/cost-breakdown
+2026-01-14 17:29:03,274 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/model-distribution
+2026-01-14 17:29:03,287 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/model-distribution Status: 200 Duration: 12.63ms
+2026-01-14 17:29:03,287 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/cost-breakdown Status: 200 Duration: 15.17ms
+2026-01-14 17:29:33,281 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/overview
+2026-01-14 17:29:33,282 - app.core.middleware - INFO - REQ_START: GET /api/v1/analytics/requests
+2026-01-14 17:29:33,290 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/requests Status: 200 Duration: 7.85ms
+2026-01-14 17:29:33,290 - app.core.middleware - INFO - REQ_END: GET /api/v1/analytics/overview Status: 200 Duration: 9.54ms
