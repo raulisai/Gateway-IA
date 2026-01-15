@@ -22,10 +22,10 @@ class RoutingEngine:
         
         # 2. Filtering Phase
         candidates = self._filter_active(candidates)
+        candidates = self._filter_available_providers(candidates, available_providers)
         candidates = self._filter_context_window(candidates, requirements)
         candidates = self._filter_features(candidates, requirements)
         candidates = self._filter_provider_preference(candidates, requirements)
-        candidates = self._filter_available_providers(candidates, available_providers)
         
         if not candidates:
             # Emergency fallback or error
@@ -57,39 +57,57 @@ class RoutingEngine:
         for model in models:
             score = 0.0
             
-            # Base Cost Score (Inverse of cost)
-            # Normalize: assume max cost is around $0.03 (gpt-4)
+            # 1. Base Cost Score (Inverse of cost)
+            # Reference max cost around $5.00/1M input (Claude, GPT-4)
             # cost_score = 100 * (1 - (model_cost / max_ref_cost))
-            total_cost_per_k = model.cost_per_1k_input + model.cost_per_1k_output
-            cost_score = max(0, 100 * (1 - (total_cost_per_k / 0.04))) # 0.04 as harsh upper bound reference
+            total_input_cost = model.cost_per_1k_input * 1000 # Convert to per 1M
+            # Cap cost penalty
+            cost_score = max(0, 100 * (1 - (total_input_cost / 10.0))) 
             
-            # Speed Score (Heuristic)
-            # Flash/Mini models = 90, Turbo/Sonnet = 70, Opus/GPT4 = 50
+            # 2. Speed Score (Heuristic based on Provider/Model Family)
             speed_score = 50
-            if "flash" in model.id or "mini" in model.id:
-                speed_score = 90
-            elif "3-5" in model.id or "turbo" in model.id:
-                speed_score = 70
+            mid = model.id.lower()
             
-            # Quality Score (Heuristic)
-            # GPT-4o/Sonnet = 95, Mini/Flash = 60
+            # Groq LPU is ultra-fast
+            if model.provider == "groq":
+                speed_score = 98 # Almost instant
+            elif "flash" in mid: # Gemini Flash, DeepSeek, GPT-4o-mini
+                speed_score = 90
+            elif "mini" in mid or "haiku" in mid:
+                speed_score = 85
+            elif "turbo" in mid or "sonnet" in mid:
+                speed_score = 70
+            elif "opus" in mid or "gpt-4" in mid: # Heavier models
+                speed_score = 50
+            
+            # 3. Quality Score (Heuristic based on Leaderboards/Desc)
             quality_score = 60
-            if "gpt-4o" in model.id and "mini" not in model.id:
+            
+            # Frontier Class
+            if any(x in mid for x in ["gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro", "opus-3"]):
                 quality_score = 95
-            elif "claude-3-5" in model.id:
-                quality_score = 95
-            elif "gemini-1.5-pro" in model.id:
-                quality_score = 90
+                
+            # Strong Open Source / Efficient Frontier
+            elif any(x in mid for x in ["llama-3.1-70b", "llama-3.3-70b", "deepseek-chat", "deepseek-v3"]):
+                quality_score = 92
+                
+            # Mid-Range / Efficient
+            elif any(x in mid for x in ["gpt-4o-mini", "gemini-1.5-flash", "claude-3-haiku", "llama-3.1-8b"]):
+                quality_score = 80
+                
+            # Specialized
+            elif "deepseek-reasoner" in mid or "o1" in mid or "reasoning" in mid:
+                quality_score = 96 # Reasoning specialists
             
             # Weighted Sum based on Strategy
             if strategy == RoutingStrategy.COST:
-                score = (cost_score * 0.8) + (quality_score * 0.1) + (speed_score * 0.1)
+                score = (cost_score * 0.7) + (quality_score * 0.2) + (speed_score * 0.1)
             elif strategy == RoutingStrategy.SPEED:
-                score = (speed_score * 0.8) + (cost_score * 0.1) + (quality_score * 0.1)
+                score = (speed_score * 0.8) + (quality_score * 0.1) + (cost_score * 0.1)
             elif strategy == RoutingStrategy.QUALITY:
-                score = (quality_score * 0.8) + (speed_score * 0.1) + (cost_score * 0.1)
+                score = (quality_score * 0.7) + (speed_score * 0.15) + (cost_score * 0.15)
             else: # BALANCED
-                score = (quality_score * 0.4) + (cost_score * 0.4) + (speed_score * 0.2)
+                score = (quality_score * 0.4) + (cost_score * 0.3) + (speed_score * 0.3)
                 
             results.append({"model": model, "score": score})
             

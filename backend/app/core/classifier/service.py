@@ -44,33 +44,38 @@ class RequestClassifier:
 
         # 3. Determine Complexity
         complexity = "simple"
-        provider = "openai" # default to flash/mini equivalent
+        provider = "groq" # default to fast/cheap (Llama on Groq)
         reasoning = f"Request length is {tokens} tokens."
 
         # Heuristics
         # If we detect specific technical features, bump complexity immediately
         is_technical = any(f in detected_features for f in ["code", "sql", "refactor"])
+        is_reasoning = "reasoning" in detected_features
         
         if tokens > self.COMPLEX_THRESHOLD:
             complexity = "expert"
-            provider = "anthropic" # Claude or big context models
-            reasoning += " High context usage requires expert model."
+            provider = "google" # Gemini 1.5/2.0 often has huge context and lower cost than Anthropic
+            reasoning += " High context usage (>15k)."
         elif tokens > self.MODERATE_THRESHOLD:
             complexity = "complex"
-            provider = "anthropic" 
+            provider = "anthropic" # Claude 3.5 Sonnet is king here
             reasoning += " Significant context length."
+        elif is_reasoning:
+            complexity = "expert"
+            provider = "deepseek" # DeepSeek-R1 / Reasoner
+            reasoning += " Reasoning features detected (deep thinking required)."
         elif is_technical:
             complexity = "complex"
-            provider = "anthropic" # Claude is generally preferred for coding/technical
-            reasoning += " Technical content detected (code/sql), upgrading complexity."
+            provider = "anthropic" # Claude is generally preferred for coding
+            reasoning += " Technical content detected (code/sql)."
         elif tokens > self.SIMPLE_THRESHOLD:
             complexity = "moderate"
-            provider = "openai" # gpt-4o
+            provider = "openai" # gpt-4o standard
             reasoning += " Moderate length."
         else:
             complexity = "simple"
-            provider = "openai" # gpt-4o-mini / gemini-flash
-            reasoning += " Short and simple request."
+            provider = "groq" # Llama-3.1-8b / 70b on Groq is unbeatable for speed
+            reasoning += " Short request, prioritizing speed (Groq)."
 
         return ClassificationResult(
             complexity=complexity,
