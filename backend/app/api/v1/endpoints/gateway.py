@@ -193,7 +193,8 @@ async def gateway_chat_completions(
             complexity_level=classification.complexity,
             model_name=model_def.name,
             provider=model_def.provider,
-            reasoning=f"Matched complexity level {classification.complexity} with requirements: {classification.detected_features}"
+            reasoning=f"Matched complexity level {classification.complexity} with requirements: {classification.detected_features}",
+            proposed_models=routing_result.proposed_models
         )
 
         return response

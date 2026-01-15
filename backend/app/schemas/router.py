@@ -15,8 +15,15 @@ class RoutingRequirements(BaseModel):
     max_cost: Optional[float] = Field(None, description="Maximum cost constraint")
     provider_preference: Optional[str] = Field(None, description="Preferred provider")
 
+class ProposedModel(BaseModel):
+    id: str
+    name: str
+    provider: str
+    score: float
+
 class RoutingResult(BaseModel):
     selected_model_id: str
     fallback_models: List[str] = Field(default_factory=list)
+    proposed_models: List[ProposedModel] = Field(default_factory=list)
     reasoning: str
     strategy_used: RoutingStrategy

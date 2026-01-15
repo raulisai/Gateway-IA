@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from app.core.registry import model_registry
 from app.schemas.registry import ModelDefinition
-from app.schemas.router import RoutingRequirements, RoutingStrategy, RoutingResult
+from app.schemas.router import RoutingRequirements, RoutingStrategy, RoutingResult, ProposedModel
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +41,21 @@ class RoutingEngine:
         
         selected = scored_candidates[0]["model"]
         fallbacks = [item["model"].id for item in scored_candidates[1:]]
+        
+        proposed = [
+            ProposedModel(
+                id=item["model"].id,
+                name=item["model"].name,
+                provider=item["model"].provider,
+                score=item["score"]
+            )
+            for item in scored_candidates[:5] # Return top 5
+        ]
 
         return RoutingResult(
             selected_model_id=selected.id,
             fallback_models=fallbacks,
+            proposed_models=proposed,
             reasoning=f"Selected {selected.id} with score {scored_candidates[0]['score']:.2f}. Strategy: {strategy}",
             strategy_used=strategy
         )

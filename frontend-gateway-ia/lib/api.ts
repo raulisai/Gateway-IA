@@ -40,12 +40,20 @@ api.interceptors.response.use(
   }
 );
 
+export interface ProposedModel {
+  id: string;
+  name: string;
+  provider: string;
+  score: number;
+}
+
 export interface RoutingInfo {
   complexity_score: number;
   complexity_level: string;
   model_name: string;
   provider: string;
   reasoning: string;
+  proposed_models?: ProposedModel[];
 }
 
 export interface GenerationResponse {
@@ -178,6 +186,26 @@ export const apiClient = {
 
     async getCurrentUser(): Promise<User> {
       const response = await api.get<User>('/auth/me');
+      return response.data;
+    },
+  },
+
+  // Users endpoints
+  users: {
+    async updateMe(data: Partial<User> & { password?: string }): Promise<User> {
+      const response = await api.put<User>('/users/me', data);
+      return response.data;
+    },
+
+    async list(skip: number = 0, limit: number = 100): Promise<User[]> {
+      const response = await api.get<User[]>('/users/', {
+        params: { skip, limit },
+      });
+      return response.data;
+    },
+
+    async updateById(userId: string, data: Partial<User> & { password?: string }): Promise<User> {
+      const response = await api.put<User>(`/users/${userId}`, data);
       return response.data;
     },
   },

@@ -50,7 +50,7 @@ class RequestClassifier:
     # Provider Overrides (Feature -> Provider)
     # Order matters: higher priority first
     OVERRIDES = [
-        ("reasoning", "deepseek"),
+        ("reasoning", "google"),
         ("math", "deepseek"),
         ("refactor", "anthropic"),
         ("architecture", "anthropic"),

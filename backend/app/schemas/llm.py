@@ -32,6 +32,7 @@ class RoutingInfo(BaseModel):
     model_name: str
     provider: str
     reasoning: str
+    proposed_models: List[Any] = Field(default_factory=list)
 
 
 class GenerationResponse(BaseModel):
