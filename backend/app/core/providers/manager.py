@@ -8,6 +8,7 @@ from app.core.providers.base import BaseProvider
 from app.core.providers.openai import OpenAIProvider
 from app.core.providers.anthropic import AnthropicProvider
 from app.core.providers.google import GoogleProvider
+from app.core.providers.groq import GroqProvider
 from app.schemas.llm import GenerationRequest, GenerationResponse
 from app import crud
 from app.core.registry import model_registry
@@ -20,6 +21,7 @@ class ProviderManager:
             "openai": OpenAIProvider(),
             "anthropic": AnthropicProvider(),
             "google": GoogleProvider(),
+            "groq": GroqProvider(),
         }
 
     def get_provider(self, provider_name: str) -> BaseProvider:
@@ -40,6 +42,8 @@ class ProviderManager:
             return "anthropic"
         elif "gemini" in model_id:
             return "google"
+        elif "llama" in model_id or "mixtral" in model_id or "groq" in model_id:
+            return "groq"
         raise ValueError(f"Unknown provider for model {model_id}")
 
     @retry(

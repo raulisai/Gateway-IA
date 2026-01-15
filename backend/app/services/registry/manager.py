@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 from app.services.registry.scraper import (
-    RegistryScraper, OpenAIScraper, AnthropicScraper, GoogleScraper, GrokScraper, DeepSeekScraper, ScrapedModel
+    RegistryScraper, OpenAIScraper, AnthropicScraper, GoogleScraper, GrokScraper, DeepSeekScraper, GroqLpuScraper, ScrapedModel
 )
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,8 @@ class RegistryManager:
             AnthropicScraper(),
             GoogleScraper(),
             GrokScraper(),
-            DeepSeekScraper()
+            DeepSeekScraper(),
+            GroqLpuScraper(),
         ]
 
     def backup_registry(self) -> str:
