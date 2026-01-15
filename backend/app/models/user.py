@@ -15,6 +15,7 @@ class User(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, onupdate=lambda: datetime.now(timezone.utc))
     is_active = Column(Boolean, default=True)
+    is_superuser = Column(Boolean, default=False)
 
     gateway_keys = relationship("GatewayKey", back_populates="user", cascade="all, delete-orphan")
     provider_keys = relationship("ProviderKey", back_populates="user", cascade="all, delete-orphan")

@@ -7,6 +7,7 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
     is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
     plan: Optional[str] = "free"
 
 class UserCreate(UserBase):

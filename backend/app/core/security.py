@@ -65,7 +65,7 @@ class KeyVault:
         try:
             return self.cipher.decrypt(ciphertext.encode()).decode()
         except Exception:
-            return "Decryption error: Invalid key or corrupted data"
+            raise ValueError("Decryption failed: Invalid key or corrupted data")
 
 # Global instance for easy use
 key_vault = KeyVault()

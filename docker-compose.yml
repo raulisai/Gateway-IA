@@ -39,19 +39,6 @@ services:
       - backend
     restart: unless-stopped
 
-  updater:
-    build:
-      context: ./updater
-      dockerfile: Dockerfile
-    container_name: gateway-updater
-    volumes:
-      - ./data:/app/data
-    environment:
-      - REGISTRY_URL=https://raw.githubusercontent.com/user/repo/main/registry.json
-    networks:
-      - gateway-network
-    restart: unless-stopped
-
 networks:
   gateway-network:
     driver: bridge
