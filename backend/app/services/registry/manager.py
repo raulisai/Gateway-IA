@@ -72,7 +72,8 @@ class RegistryManager:
                         # New model
                         new_model_dict = scraped.model_dump()
                         new_model_dict["provider"] = scraper.provider_name
-                        new_model_dict["is_active"] = True 
+                        new_model_dict["is_active"] = True
+                        new_model_dict["original_model_id"] = model_id
                         # Assuming defaults for missing fields if any
                         new_registry_map[model_id] = new_model_dict
                         changelog["added"].append(model_id)
