@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 import uuid
@@ -22,6 +22,7 @@ class RequestLog(Base):
     cache_hit = Column(Integer, default=0)
     status_code = Column(Integer, nullable=False)
     error_message = Column(String)
+    meta_data = Column(JSON, nullable=True) # ML Training Data (Features, Scores, Routing info)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     user = relationship("User", back_populates="request_logs")

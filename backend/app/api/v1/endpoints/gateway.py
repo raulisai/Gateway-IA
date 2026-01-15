@@ -174,7 +174,10 @@ async def gateway_chat_completions(
             usage=response.usage,
             latency_ms=int((time.time() - start_time) * 1000), 
             status_code=200,
-            cache_hit=False
+            cache_hit=False,
+            # Pass ML Data
+            classification_result=classification,
+            routing_result=routing_result
         )
         
         # 8. Enrich Response with Routing Info for Playground/Testing
