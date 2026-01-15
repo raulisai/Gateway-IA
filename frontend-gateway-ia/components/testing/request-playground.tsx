@@ -85,7 +85,7 @@ export function RequestPlayground() {
             </Card>
 
             {/* RIGHT: Analysis Panel */}
-            <Card className="lg:col-span-4 flex flex-col h-full border-muted bg-card/50">
+            <Card variant="ghost" className="lg:col-span-4 flex flex-col h-full border-muted bg-card/50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Play className="w-5 h-5 text-primary" />
