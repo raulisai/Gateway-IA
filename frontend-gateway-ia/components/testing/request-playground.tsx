@@ -48,10 +48,10 @@ export function RequestPlayground() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-8rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(80vh-8rem)]">
 
             {/* LEFT: Input Panel */}
-            <Card className="lg:col-span-3 flex flex-col h-full border-muted">
+            <Card className="lg:col-span-3 flex flex-col border-muted">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Send className="w-5 h-5 text-primary" />
@@ -77,7 +77,7 @@ export function RequestPlayground() {
             </Card>
 
             {/* CENTER: Visualizer */}
-            <Card className="lg:col-span-5 h-full overflow-hidden border-none shadow-2xl bg-slate-950">
+            <Card variant="ghost" className="lg:col-span-5 h-full overflow-hidden border-muted">
                 <EngineVisualizer
                     status={status}
                     routingInfo={response?.routing_info}
