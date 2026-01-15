@@ -26,6 +26,10 @@ class UserCreate(UserBase):
             raise ValueError('Password must contain at least one digit')
         return v
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
 class UserUpdate(UserBase):
     password: Optional[str] = None
 

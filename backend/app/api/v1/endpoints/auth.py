@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import uuid
 
 from app.crud.user import get_user_by_email, create_user, authenticate
-from app.schemas.user import User, UserCreate
+from app.schemas.user import User, UserCreate, UserLogin
 from app.schemas.auth import Token
 from app.api.deps import get_db, get_current_user, reusable_oauth2
 from app.core.security import create_access_token
@@ -59,7 +59,7 @@ def login_access_token(
 
 @router.post("/login", response_model=Token)
 def login(
-    user_in: UserCreate, db: Session = Depends(get_db)
+    user_in: UserLogin, db: Session = Depends(get_db)
 ) -> Any:
     """
     Generic login endpoint (JSON based)

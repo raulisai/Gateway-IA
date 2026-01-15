@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window === 'undefined') return;
 
     const token = localStorage.getItem('access_token');
-    
+
     if (!token) {
       setUser(null);
       setLoading(false);
@@ -82,37 +82,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Check token expiration every minute
     const interval = setInterval(checkTokenExpiration, 60000);
-    
+
     return () => clearInterval(interval);
   }, [fetchUser, checkTokenExpiration]);
 
   const login = async (email: string, password: string) => {
     try {
       const response = await apiClient.auth.login(email, password);
-      
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('access_token', response.access_token);
       }
-      
+
       // Fetch user data after login
       await fetchUser();
-      
+
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Login failed:', error);
-      throw new Error(error.response?.data?.detail || 'Invalid credentials');
+      let errorMessage = 'Credenciales incorrectas';
+      if (error.response?.data?.detail) {
+        if (Array.isArray(error.response.data.detail)) {
+          errorMessage = error.response.data.detail.map((d: any) => d.msg).join(', ');
+        } else {
+          errorMessage = error.response.data.detail;
+        }
+      }
+      throw new Error(errorMessage);
     }
   };
 
   const signup = async (email: string, password: string, full_name?: string) => {
     try {
       await apiClient.auth.signup(email, password, full_name);
-      
+
       // Auto-login after signup
       await login(email, password);
     } catch (error: any) {
       console.error('Signup failed:', error);
-      throw new Error(error.response?.data?.detail || 'Signup failed');
+      let errorMessage = 'Error al crear la cuenta';
+      if (error.response?.data?.detail) {
+        if (Array.isArray(error.response.data.detail)) {
+          errorMessage = error.response.data.detail.map((d: any) => d.msg).join(', ');
+        } else {
+          errorMessage = error.response.data.detail;
+        }
+      }
+      throw new Error(errorMessage);
     }
   };
 
