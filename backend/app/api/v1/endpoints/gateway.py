@@ -109,17 +109,22 @@ async def gateway_chat_completions(
         user_keys_db = crud.provider_key.get_provider_keys_by_user(db, user_id=current_user.id)
         available_providers = [pk.provider for pk in user_keys_db]
         
+        # Determine strategy: Force COST for simple queries to save money, otherwise respect payload
+        strategy = payload.routing_strategy
+        if classification.complexity == "simple":
+            strategy = RoutingStrategy.COST
+
         # Determine the best model based on classification result and user strategy
         requirements = RoutingRequirements(
             input_tokens=classification.tokens,
             max_output_tokens=payload.max_tokens or 1024,
             required_features=classification.detected_features,
-            # we could add more constraints from payload here
+            provider_preference=classification.recommended_provider # <--- CRITICAL FIX
         )
         
         routing_result = routing_engine.select_model(
             requirements, 
-            strategy=payload.routing_strategy,
+            strategy=strategy,
             available_providers=available_providers
         )
         logger.info(f"Routing result: {routing_result.json()}")
