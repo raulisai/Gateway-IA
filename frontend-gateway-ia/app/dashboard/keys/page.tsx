@@ -377,6 +377,7 @@ export default function KeysPage() {
                       <option value="openai">OpenAI</option>
                       <option value="anthropic">Anthropic</option>
                       <option value="google">Google AI</option>
+                      <option value="groq">Groq</option>
                     </select>
                   </div>
                   <div className="space-y-2">

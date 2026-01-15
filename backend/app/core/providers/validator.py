@@ -46,6 +46,20 @@ async def validate_google_key(api_key: str) -> bool:
         except Exception:
             return False
 
+
+async def validate_groq_key(api_key: str) -> bool:
+    """Validate Groq API key by calling /openai/v1/models"""
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(
+                "https://api.groq.com/openai/v1/models",
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=10.0
+            )
+            return response.status_code == 200
+        except Exception:
+            return False
+
 async def validate_provider_key(provider: str, api_key: str) -> bool:
     """Generic validator for provider keys"""
     if provider == "openai":
@@ -54,4 +68,6 @@ async def validate_provider_key(provider: str, api_key: str) -> bool:
         return await validate_anthropic_key(api_key)
     elif provider == "google":
         return await validate_google_key(api_key)
+    elif provider == "groq":
+        return await validate_groq_key(api_key)
     return False
