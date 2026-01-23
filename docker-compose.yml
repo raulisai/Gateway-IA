@@ -12,7 +12,7 @@ services:
       - DATABASE_URL=sqlite:///./data/gateway.db
       - SECRET_KEY=${SECRET_KEY}
       - MASTER_ENCRYPTION_KEY=${MASTER_ENCRYPTION_KEY}
-      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - CORS_ORIGINS=${CORS_ORIGINS}
     restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ] # Verify if health endpoint exists
@@ -26,7 +26,7 @@ services:
       context: ./frontend-gateway-ia
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     container_name: gateway-frontend
     ports:
       - "3000:3000"
