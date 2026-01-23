@@ -8,40 +8,35 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/app/data
-      - ./backend:/app
     environment:
       - DATABASE_URL=sqlite:///./data/gateway.db
       - SECRET_KEY=${SECRET_KEY}
       - MASTER_ENCRYPTION_KEY=${MASTER_ENCRYPTION_KEY}
-      - CORS_ORIGINS=http://localhost:3000
-    networks:
-      - gateway-network
-    restart: unless-stopped
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+    restart: always
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ] # Verify if health endpoint exists
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 20s
 
   frontend:
     build:
       context: ./frontend-gateway-ia
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     container_name: gateway-frontend
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-    networks:
-      - gateway-network
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NODE_ENV=production
     depends_on:
       - backend
-    restart: unless-stopped
+    restart: always
 
 networks:
   gateway-network:
     driver: bridge
-
-volumes:
-  data:
